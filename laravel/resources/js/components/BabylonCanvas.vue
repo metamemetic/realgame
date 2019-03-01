@@ -4,9 +4,7 @@
 
 <script>
     import * as BABYLON from 'babylonjs';
-    import 'babylonjs-materials';
-    import 'babylonjs-loaders';
-    import 'babylonjs-procedural-textures';
+    import 'babylonjs-materials';    
 
     export default {
         mounted() {
