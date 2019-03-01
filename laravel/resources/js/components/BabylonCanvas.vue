@@ -4,9 +4,14 @@
 
 <script>
     import * as BABYLON from 'babylonjs';
-    import 'babylonjs-materials';    
+    import 'babylonjs-materials';
 
     export default {
+        data () {
+            return {
+                users: []
+            }
+        },
         mounted() {
             var canvas = document.getElementById("renderCanvas");
             var engine = new BABYLON.Engine(canvas, true);
@@ -115,6 +120,16 @@
             window.addEventListener("resize", function () {
                 engine.resize();
             });
+            
+            Echo.join('online')
+                .here(users => (this.users = users))
+                .joining(user => {
+                    console.log('User joined:', user)
+                })
+                .leaving(user => {
+                    console.log('User left:', user)
+                })
+                // .leaving(user => (this.users = this.users.filter(u => (u.id !== user.id))))
         }
     }
 </script>
