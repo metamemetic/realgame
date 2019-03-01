@@ -12,6 +12,7 @@ First install [Laravel](https://laravel.com/docs/5.8/valet) and optionally the d
 git clone git@github.com:ArcadeCity/realgame.git
 cd realgame/laravel
 composer install
+npm install
 cp .env.example .env
 php artisan key:generate
 valet link realgame
