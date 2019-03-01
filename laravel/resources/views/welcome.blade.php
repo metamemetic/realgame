@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>Arcade City</title>        
+        <title>Arcade City</title>
 
         <style>
             html, body {
@@ -26,22 +26,11 @@
                 display: flex;
                 justify-content: center;
             }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
         </style>
     </head>
     <body>
-        <div id="app" class="flex-center position-ref full-height">
-            <div class="content">
-                Arcade City
-                <example-component></example-component>
-            </div>
+        <div id="app" class="full-height">
+            <babylon-canvas></babylon-canvas>
         </div>
         <script src="{{ mix('js/app.js') }}"></script>
     </body>
