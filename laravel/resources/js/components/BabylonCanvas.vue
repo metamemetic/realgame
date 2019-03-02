@@ -114,6 +114,9 @@
             })
 
             Echo.private('locations')
+                .listenForWhisper('location', (e) => {
+                    console.log('Location received:', e);
+                });
 
             var sendLocation = function () {
                 let x = Math.floor(shape.position.x * 100) / 100
@@ -129,8 +132,6 @@
             }
 
             sendLocation()
-
-
 
             Echo.join('online')
                 .here(users => (this.users = users))
