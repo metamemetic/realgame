@@ -7,12 +7,15 @@
     import 'babylonjs-materials';
 
     export default {
+        props: ['me'],
         data () {
             return {
                 users: []
             }
         },
         mounted() {
+            console.log('me:', this.me)
+
             function onNewGamepadConnected(gamepad) {
                 console.log('what this gamepad', gamepad)
             }
@@ -118,13 +121,15 @@
                     console.log('Location received:', e);
                 });
 
+            var userId = this.me.id
+
             var sendLocation = function () {
                 let x = Math.floor(shape.position.x * 100) / 100
                 let z = Math.floor(shape.position.z * 100) / 100
 
                 Echo.private('locations')
                     .whisper('location', {
-                        x, z, userId: 123
+                        x, z, userId
                     })
 
                 console.log('Sending location: ', x, z)
