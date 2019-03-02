@@ -123,6 +123,10 @@
                     // shape.translate(BABYLON.Axis.X, throttle, BABYLON.Space.LOCAL)
                     shape.rotation.y += turnspeed;
                 }
+
+                userShapes.forEach(shape => {
+                    shape.tag.moveToVector3(new BABYLON.Vector3(shape.shape.position.x, 3.2, shape.shape.position.z), scene)
+                })
             })
 
             var userId = this.me.id
@@ -141,7 +145,7 @@
                         userShapes[e.userId].shape.position.z = e.z
                     } else {
                         console.log('Could not find userShape with user id ' + e.userId)
-                        makeShape(e.x, e.z, e.userId, 'placeholder')
+                        makeShape(e.x, e.z, e.userId, 'Jimbo')
                     }
 
                 });
@@ -155,22 +159,31 @@
                         x, z, userId
                     })
 
-                setTimeout(sendLocation, 5000)
+                setTimeout(sendLocation, 1000)
             }
 
             sendLocation()
+
+            // scene.registerBeforeRender(function() {
+            //     // console.log('test')
+            //
+            //     userShapes.forEach(shape => {
+            //         shape.tag.moveToVector3(shape.shape.position.x, 3, shape.shape.position.z)
+            //     })
+            //     // console.log('----')
+            // })
+
+
+            // scene.registerBeforeRender(function() {
+            //     rect1.moveToVector3(new BABYLON.Vector3(0, 1, 0))
+            // })
 
             var makeShape = function (x, z, userId, name) {
                 console.log('making shape with name ' + name)
                 let userShape = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
                 userShape.position = new BABYLON.Vector3(0, 1, 0);
 
-                userShapes[userId] = {
-                    name,
-                    x,
-                    z,
-                    shape: userShape
-                }
+
 
                 // GUI
                 // var rect1 = new BABYLON.GUI.Rectangle();
@@ -191,36 +204,47 @@
 
                 var rect1 = new BABYLON.GUI.Rectangle();
                 rect1.width = 0.2;
-                rect1.height = "40px";
+                rect1.height = "25px";
                 rect1.cornerRadius = 20;
-                rect1.color = "White";
-                rect1.thickness = 4;
-                rect1.background = "#190529";
+                // rect1.color = "White";
+                rect1.thickness = 0;
+                // rect1.background = "#190529";
                 advancedTexture.addControl(rect1);
-                rect1.linkWithMesh(userShape);
-                rect1.linkOffsetY = -150;
+                // rect1.moveToVector3(new BABYLON.Vector3(0, 5, 0), scene)
+
+                // rect1.linkWithMesh(userShape);
+                // rect1.linkOffsetY = -150;
 
                 var label = new BABYLON.GUI.TextBlock();
                 label.text = name;
+                label.color = "White"
                 rect1.addControl(label);
+                //
+                // var target = new BABYLON.GUI.Ellipse();
+                // target.width = "20px";
+                // target.height = "20px";
+                // target.color = "White";
+                // target.thickness = 4;
+                // target.background = "#190529";
+                // advancedTexture.addControl(target);
+                // target.linkWithMesh(userShape);
+                //
+                // var line = new BABYLON.GUI.Line();
+                // line.lineWidth = 4;
+                // line.color = "White";
+                // line.y2 = 40;
+                // line.linkOffsetY = -10;
+                // advancedTexture.addControl(line);
+                // line.linkWithMesh(userShape);
+                // line.connectedControl = rect1;
 
-                var target = new BABYLON.GUI.Ellipse();
-                target.width = "20px";
-                target.height = "20px";
-                target.color = "White";
-                target.thickness = 4;
-                target.background = "#190529";
-                advancedTexture.addControl(target);
-                target.linkWithMesh(userShape);
-
-                var line = new BABYLON.GUI.Line();
-                line.lineWidth = 4;
-                line.color = "White";
-                line.y2 = 20;
-                line.linkOffsetY = -10;
-                advancedTexture.addControl(line);
-                line.linkWithMesh(userShape);
-                line.connectedControl = rect1;
+                userShapes[userId] = {
+                    name,
+                    x,
+                    z,
+                    shape: userShape,
+                    tag: rect1
+                }
             }
 
             Echo.join('online')
