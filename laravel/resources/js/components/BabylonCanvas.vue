@@ -74,10 +74,10 @@
             // Add cone, make invisible, attach camera
             var shape = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
         	shape.position = new BABYLON.Vector3(0, 1, 0);
-            shape.rotation.y = 2*Math.PI/2
+            shape.rotation.y = Math.PI * 2
 
             shape.visibility = 0
-            // camera.parent = shape;
+            camera.parent = shape;
 
             engine.runRenderLoop(function () {
                 scene.render();
@@ -87,15 +87,14 @@
                 engine.resize();
             });
 
-            // var inputMap ={};
-            // scene.actionManager = new BABYLON.ActionManager(scene);
-            // scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
-            //     inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
-            // }));
-            // scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
-            //     inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
-            // }));
-            //
+            var inputMap = {};
+            scene.actionManager = new BABYLON.ActionManager(scene);
+            scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
+                inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+            }));
+            scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
+                inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+            }));
 
             // var diffAngle;
             // var pickResult;
@@ -107,48 +106,20 @@
             // var pickResultPosClicked = new BABYLON.Vector3(0,0,100);
             //
             // // Game/Render loop
-            // scene.onBeforeRenderObservable.add(()=>{
-            //     //vector forward direction
-            //     // var forward = camera.getFrontPosition(1).subtract(shape.position);
-            //     // forward.y = 0;
-            //
-            //     // var target = shape.position.clone();
-            //     // var forward = target.subtract(camera.position).normalize();
-            //
-            //     var cameraForwardRayPosition = camera.getForwardRay().direction;
-            //     var cameraForwardRayPositionWithoutY = new BABYLON.Vector3(cameraForwardRayPosition.x, 0, cameraForwardRayPosition.z);
-            //
-            //     console.log(cameraForwardRayPositionWithoutY)
-            //
-            //     //get rotation dir
-            //     // var diffAngle = Math.atan2(forward.x,forward.z);
-            //     // console.log(diffAngle)
-            //
-            //     if(inputMap["w"] || inputMap["ArrowUp"]){
-            //
-            //         shape.lookAt(shape.position.add(cameraForwardRayPositionWithoutY), 0, 0, 0);
-            //
-            //         // console.log('w hit. Forward is now:', forward)
-            //         // shape.rotation.y = diffAngle + (Math.PI);
-            //         // camera.rotation.y = diffAngle + (Math.PI);
-            //         // shape.position.z+=0.1
-            //
-            //         var v2 = BABYLON.Vector3.TransformCoordinates(new BABYLON.Vector3(0, 0, -0.02), BABYLON.Matrix.RotationY(shape.rotation.y));
-            //         shape.position.addInPlace(v2);
-            //     }
-            //     if(inputMap["a"] || inputMap["ArrowLeft"]){
-            //         shape.position.x-=0.1
-            //         // shape.rotation.y = diffAngle + (Math.PI/2);
-            //     }
-            //     if(inputMap["s"] || inputMap["ArrowDown"]){
-            //         shape.position.z-=0.1
-            //         // shape.rotation.y = diffAngle;
-            //     }
-            //     if(inputMap["d"] || inputMap["ArrowRight"]){
-            //         shape.position.x+=0.1
-            //         // shape.rotation.y = diffAngle - (Math.PI/2);
-            //     }
-            // })
+            scene.onBeforeRenderObservable.add(()=>{
+                if(inputMap["w"] || inputMap["ArrowUp"]){
+                    shape.position.z-=0.1
+                }
+                if(inputMap["a"] || inputMap["ArrowLeft"]){
+                    shape.position.x+=0.1
+                }
+                if(inputMap["s"] || inputMap["ArrowDown"]){
+                    shape.position.z+=0.1
+                }
+                if(inputMap["d"] || inputMap["ArrowRight"]){
+                    shape.position.x-=0.1
+                }
+            })
 
             // function mousemovef(){
             //     var forward = camera.getFrontPosition(1).subtract(shape.position);
