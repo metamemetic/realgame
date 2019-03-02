@@ -33,5 +33,6 @@
             <babylon-canvas></babylon-canvas>
         </div>
         <script src="{{ mix('js/app.js') }}"></script>
+        <script src="//code.jquery.com/pep/0.4.0/pep.min.js"></script>
     </body>
 </html>
