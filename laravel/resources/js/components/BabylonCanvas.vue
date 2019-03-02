@@ -144,8 +144,7 @@
                         x, z, userId
                     })
 
-                // console.log('Sending location: ', x, z)
-                setTimeout(sendLocation, 500)
+                setTimeout(sendLocation, 5000)
             }
 
             sendLocation()
