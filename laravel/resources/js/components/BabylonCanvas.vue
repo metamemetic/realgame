@@ -96,15 +96,7 @@
                 inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
             }));
 
-            // var diffAngle;
-            // var pickResult;
-            // var manState = 'idle';
-            // var pickResultPos = new BABYLON.Vector3(0,0,0);
-            // var dirvec = new BABYLON.Vector3(0,0,0);
-            // var dirveckback = new BABYLON.Vector3(0,0,0);
-            // var forwardvec = new BABYLON.Vector3(0,0,0);
-            // var pickResultPosClicked = new BABYLON.Vector3(0,0,100);
-            //
+
             // // Game/Render loop
             scene.onBeforeRenderObservable.add(()=>{
                 if(inputMap["w"] || inputMap["ArrowUp"]){
@@ -121,27 +113,15 @@
                 }
             })
 
-            // function mousemovef(){
-            //     var forward = camera.getFrontPosition(1).subtract(shape.position);
-            //     forward.y = 0;
-            //     console.log('Moved mouse. Forward is now:', forward)
-            // 	pickResult = scene.pick(scene.pointerX, scene.pointerY);
-            // 	if (pickResult.hit) {
-            // 			if (manState != 'moving'){
-            // 				pickResultPos.x = pickResult.pickedPoint.x;
-            // 				pickResultPos.z = pickResult.pickedPoint.z;
-            // 				var diffX = pickResultPos.x - shape.position.x;
-            // 				var diffZ = pickResultPos.z - shape.position.z;
-            // 				diffAngle = Math.atan2(-diffX,-diffZ);
-            //                 forwardvec.x = (diffX);
-            //                 forwardvec.z = (diffZ);
-            // 			} // if not moving
-            // 	}// if result
-            // }//mousemovef()
-            //
-            // window.addEventListener("mousemove", function() {
-    	    //        mousemovef();
-            // });
+            var sendLocation = function () {
+                let x = Math.floor(shape.position.x * 100) / 100
+                let z = Math.floor(shape.position.z * 100) / 100
+
+                console.log('Sending location: ', x, z)
+                setTimeout(sendLocation, 1000)
+            }
+
+            sendLocation()
 
             Echo.join('online')
                 .here(users => (this.users = users))
