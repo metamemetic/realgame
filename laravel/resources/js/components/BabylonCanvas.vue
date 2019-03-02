@@ -5,6 +5,7 @@
 <script>
     import * as BABYLON from 'babylonjs';
     import 'babylonjs-materials';
+    import 'babylonjs-gui';
 
     export default {
         props: ['me'],
@@ -100,7 +101,7 @@
             }));
 
             var throttle = .15;
-            var turnspeed = .025;
+            var turnspeed = .03;
 
             // // Game/Render loop
             scene.onBeforeRenderObservable.add(()=>{
@@ -126,6 +127,8 @@
 
             var userId = this.me.id
             var userShapes = []
+            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+            advancedTexture.idealWidth = 600;
 
             Echo.private('locations')
                 .listenForWhisper('location', (e) => {
@@ -138,7 +141,7 @@
                         userShapes[e.userId].shape.position.z = e.z
                     } else {
                         console.log('Could not find userShape with user id ' + e.userId)
-                        makeShape(e.x, e.z, e.userId, '')
+                        makeShape(e.x, e.z, e.userId, 'placeholder')
                     }
 
                 });
@@ -168,6 +171,56 @@
                     z,
                     shape: userShape
                 }
+
+                // GUI
+                // var rect1 = new BABYLON.GUI.Rectangle();
+                // rect1.width = 0.2;
+                // rect1.height = "40px";
+                // rect1.cornerRadius = 20;
+                // rect1.color = "Orange";
+                // rect1.thickness = 4;
+                // rect1.background = "green";
+                // advancedTexture.addControl(rect1);
+                //
+                // var label = new BABYLON.GUI.TextBlock();
+                // label.text = name;
+                // rect1.addControl(label);
+                //
+                // rect1.linkWithMesh(userShape);
+                // rect1.linkOffsetY = 0;
+
+                var rect1 = new BABYLON.GUI.Rectangle();
+                rect1.width = 0.2;
+                rect1.height = "40px";
+                rect1.cornerRadius = 20;
+                rect1.color = "White";
+                rect1.thickness = 4;
+                rect1.background = "#190529";
+                advancedTexture.addControl(rect1);
+                rect1.linkWithMesh(userShape);
+                rect1.linkOffsetY = -150;
+
+                var label = new BABYLON.GUI.TextBlock();
+                label.text = name;
+                rect1.addControl(label);
+
+                var target = new BABYLON.GUI.Ellipse();
+                target.width = "20px";
+                target.height = "20px";
+                target.color = "White";
+                target.thickness = 4;
+                target.background = "#190529";
+                advancedTexture.addControl(target);
+                target.linkWithMesh(userShape);
+
+                var line = new BABYLON.GUI.Line();
+                line.lineWidth = 4;
+                line.color = "White";
+                line.y2 = 20;
+                line.linkOffsetY = -10;
+                advancedTexture.addControl(line);
+                line.linkWithMesh(userShape);
+                line.connectedControl = rect1;
             }
 
             Echo.join('online')
