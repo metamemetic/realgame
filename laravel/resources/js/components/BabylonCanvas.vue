@@ -28,7 +28,7 @@
 
             // Add a camera to the scene and attach it to the canvas
             // var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2.22, 2, new BABYLON.Vector3(0,1,0), scene);
-            var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1, -10), scene);
+            var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1, 0), scene);
             camera.setTarget(new BABYLON.Vector3(0,1.5,-100));
             camera.attachControl(canvas, true);
 
@@ -136,8 +136,8 @@
                 });
 
             var sendLocation = function () {
-                let x = Math.floor(shape.position.x * 100) / 100
-                let z = Math.floor(shape.position.z * 100) / 100
+                let x = Math.floor(shape.position.x * 10000) / 10000
+                let z = Math.floor(shape.position.z * 10000) / 10000
 
                 Echo.private('locations')
                     .whisper('location', {
