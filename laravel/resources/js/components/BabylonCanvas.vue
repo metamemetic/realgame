@@ -30,7 +30,7 @@
             // var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2.22, 2, new BABYLON.Vector3(0,1,0), scene);
             var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1, 0), scene);
             camera.setTarget(new BABYLON.Vector3(0,1.5,-100));
-            camera.attachControl(canvas, true);
+            // camera.attachControl(canvas, true);
 
 
             // Make the ground
@@ -99,20 +99,28 @@
                 inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
             }));
 
+            var throttle = .15;
+            var turnspeed = .025;
 
             // // Game/Render loop
             scene.onBeforeRenderObservable.add(()=>{
                 if(inputMap["w"] || inputMap["ArrowUp"]){
-                    shape.position.z-=0.1
+                    // shape.position.z-=0.1
+                    shape.translate(BABYLON.Axis.Z, -throttle, BABYLON.Space.LOCAL)
                 }
                 if(inputMap["a"] || inputMap["ArrowLeft"]){
-                    shape.position.x+=0.1
+                    // shape.position.x+=0.1
+                    // shape.translate(BABYLON.Axis.X, -throttle, BABYLON.Space.LOCAL)
+                    shape.rotation.y -= turnspeed;
                 }
                 if(inputMap["s"] || inputMap["ArrowDown"]){
-                    shape.position.z+=0.1
+                    // shape.position.z+=0.1
+                    shape.translate(BABYLON.Axis.Z, throttle, BABYLON.Space.LOCAL)
                 }
                 if(inputMap["d"] || inputMap["ArrowRight"]){
-                    shape.position.x-=0.1
+                    // shape.position.x-=0.1
+                    // shape.translate(BABYLON.Axis.X, throttle, BABYLON.Space.LOCAL)
+                    shape.rotation.y += turnspeed;
                 }
             })
 
