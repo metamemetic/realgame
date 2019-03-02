@@ -20,7 +20,7 @@
             var scene = new BABYLON.Scene(engine);
 
             // Add a camera to the scene and attach it to the canvas
-            var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2.22, 2, new BABYLON.Vector3(0,2,0), scene);
+            var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2.22, 2, new BABYLON.Vector3(0,1,0), scene);
 
             // Make the ground
             var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, scene);
@@ -58,60 +58,11 @@
 
             // Add cone, make invisible, attach camera
             var shape = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
-        	shape.position = new BABYLON.Vector3(0, 15, 0);
+        	shape.position = new BABYLON.Vector3(0, 1, 0);
+            shape.rotation.y = 2*Math.PI/2
+
             shape.visibility = 0
             camera.parent = shape;
-
-            // Set up position animation
-        	var posAnim = new BABYLON.Animation("pa", "position", 15,
-        		BABYLON.Animation.ANIMATIONTYPE_VECTOR3, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
-
-        	// Animation keys
-        	var posKeys = [];
-        	posKeys.push({ frame: 0, value: shape.position });
-        	posKeys.push({ frame: 120, value: new BABYLON.Vector3(0, 0, -25) });
-            posKeys.push({ frame: 838, value: new BABYLON.Vector3(0, 0, -500) });
-        	posAnim.setKeys(posKeys);
-
-        	// vars for all the available easing trajectories
-        	var amplitude = 1;
-
-        	var bounces = 3;
-        	var bounciness = .1;
-
-        	var oscillations = 1;
-        	var springiness = 1;
-
-        	var exponent = 5;
-        	var power = 5;
-
-        	// pre-make all available easings... for fun
-        	var ef1 = new BABYLON.CircleEase();
-        	var ef2 = new BABYLON.BackEase(amplitude);
-        	var ef3 = new BABYLON.BounceEase(bounces, bounciness);
-        	var ef4 = new BABYLON.CubicEase();
-        	var ef5 = new BABYLON.ElasticEase(oscillations, springiness);
-        	var ef6 = new BABYLON.ExponentialEase(exponent);
-        	var ef7 = new BABYLON.PowerEase(power);
-        	var ef8 = new BABYLON.QuadraticEase();
-        	var ef9 = new BABYLON.QuarticEase();
-        	var ef10 = new BABYLON.QuinticEase();
-        	var ef11 = new BABYLON.SineEase();
-
-        	// set some work variables... and easy place to change/test different easings
-        	var posEase = ef11;
-
-        	// For each easing function, you can choose between EASEIN (default), EASEOUT, or EASEINOUT
-        	posEase.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEINOUT);
-
-        	// Adding the easing functions to the animations
-        	posAnim.setEasingFunction(posEase);
-
-        	// Adding the animations to shape animations collection
-        	shape.animations.push(posAnim);
-
-        	// Finally, start all animations on shape7, from key 0 to key 838 with loop false
-            scene.beginAnimation(shape, 0, 838, false);
 
             engine.runRenderLoop(function () {
                 scene.render();
@@ -120,7 +71,32 @@
             window.addEventListener("resize", function () {
                 engine.resize();
             });
-            
+
+            var inputMap ={};
+            scene.actionManager = new BABYLON.ActionManager(scene);
+            scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
+                inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+            }));
+            scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyUpTrigger, function (evt) {
+                inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
+            }));
+
+            // Game/Render loop
+            scene.onBeforeRenderObservable.add(()=>{
+                if(inputMap["w"] || inputMap["ArrowUp"]){
+                    shape.position.z+=0.1
+                }
+                if(inputMap["a"] || inputMap["ArrowLeft"]){
+                    shape.position.x-=0.1
+                }
+                if(inputMap["s"] || inputMap["ArrowDown"]){
+                    shape.position.z-=0.1
+                }
+                if(inputMap["d"] || inputMap["ArrowRight"]){
+                    shape.position.x+=0.1
+                }
+            })
+
             Echo.join('online')
                 .here(users => (this.users = users))
                 .joining(user => {
@@ -129,7 +105,6 @@
                 .leaving(user => {
                     console.log('User left:', user)
                 })
-                // .leaving(user => (this.users = this.users.filter(u => (u.id !== user.id))))
         }
     }
 </script>
