@@ -116,12 +116,24 @@
                 }
             })
 
+            var userId = this.me.id
+            var userShapes = []
+
             Echo.private('locations')
                 .listenForWhisper('location', (e) => {
                     console.log('Location received:', e);
-                });
+                    console.log('userShapes:', userShapes)
+                    if (userShapes[e.userId]) {
+                        userShapes[e.userId].x = e.x
+                        userShapes[e.userId].z = e.z
+                        userShapes[e.userId].shape.position.x = e.x
+                        userShapes[e.userId].shape.position.z = e.z
+                    } else {
+                        // console.log('Could not find userShape with user id ' + e.userId)
+                        makeShape(e.x, e.z, e.userId, '')
+                    }
 
-            var userId = this.me.id
+                });
 
             var sendLocation = function () {
                 let x = Math.floor(shape.position.x * 100) / 100
@@ -133,15 +145,28 @@
                     })
 
                 console.log('Sending location: ', x, z)
-                setTimeout(sendLocation, 3000)
+                setTimeout(sendLocation, 500)
             }
 
             sendLocation()
+
+            var makeShape = function (x, z, userId, name) {
+                let userShape = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
+                userShape.position = new BABYLON.Vector3(0, 1, 0);
+
+                userShapes[userId] = {
+                    name,
+                    x,
+                    z,
+                    shape: userShape
+                }
+            }
 
             Echo.join('online')
                 .here(users => (this.users = users))
                 .joining(user => {
                     console.log('User joined:', user)
+                    makeShape(0, 0, user.id, user.name)
                 })
                 .leaving(user => {
                     console.log('User left:', user)
