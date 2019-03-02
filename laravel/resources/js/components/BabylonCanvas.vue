@@ -113,15 +113,24 @@
                 }
             })
 
+            Echo.private('locations')
+
             var sendLocation = function () {
                 let x = Math.floor(shape.position.x * 100) / 100
                 let z = Math.floor(shape.position.z * 100) / 100
 
+                Echo.private('locations')
+                    .whisper('location', {
+                        x, z, userId: 123
+                    })
+
                 console.log('Sending location: ', x, z)
-                setTimeout(sendLocation, 1000)
+                setTimeout(sendLocation, 3000)
             }
 
             sendLocation()
+
+
 
             Echo.join('online')
                 .here(users => (this.users = users))
