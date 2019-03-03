@@ -3,6 +3,7 @@
 </template>
 
 <script>
+    import { mapGetters } from 'vuex'
     import * as BABYLON from 'babylonjs';
     import 'babylonjs-materials';
     import 'babylonjs-gui';
@@ -11,9 +12,17 @@
         props: ['me'],
 
         computed: {
+            // ...mapGetters([
+            //     'getUserById'
+            // ]),
+
             users() {
                 return window.store.state.users
-            }
+            },
+            //
+            // user(id) {
+            //     return window.store.state.users[id]
+            // }
         },
 
         methods: {
@@ -23,7 +32,11 @@
 
             setUsers(users) {
                 window.store.commit('setUsers', users)
-            }
+            },
+
+            // getUserById(id) {
+            //     window.store.getUserById(id)
+            // }
         },
 
         mounted() {
@@ -120,6 +133,8 @@
             var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
             advancedTexture.idealWidth = 600;
 
+            // let theuser = this.user
+
             // Listen for user locations and update userShapes array with user object accordingly
             Echo.private('locations')
                 .listenForWhisper('location', (e) => {
@@ -132,7 +147,7 @@
                         userShapes[e.userId].shape.position.z = e.z
                     } else {
                         console.log('Could not find userShape with user id ' + e.userId)
-                        makeShape(e.x, e.z, e.userId, 'Jimbo')
+                        makeShape(e.x, e.z, e.userId, window.store.getters.getUserById(e.userId).name) //
                     }
 
                 });

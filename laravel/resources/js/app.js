@@ -28,6 +28,12 @@ window.store = new Vuex.Store({
             console.log('in setUsers mutation with', state, users)
             state.users = users
         }
+    },
+
+    getters: {
+        getUserById: (state) => (id) => {
+            return state.users.find(user => user.id === id)
+        }
     }
 })
 
