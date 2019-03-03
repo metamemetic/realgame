@@ -9,11 +9,23 @@
 
     export default {
         props: ['me'],
-        data () {
-            return {
-                users: []
+
+        computed: {
+            users() {
+                return window.store.state.users
             }
         },
+
+        methods: {
+            addUser() {
+                window.store.commit('addUser')
+            },
+
+            setUsers(users) {
+                window.store.commit('setUsers', users)
+            }
+        },
+
         mounted() {
             console.log('Current user:', this.me)
 
@@ -171,7 +183,7 @@
 
             // Join the presence channel and handle others joining/leaving
             Echo.join('online')
-                .here(users => (this.users = users))
+                .here(users => this.setUsers(users))
                 .joining(user => {
                     console.log('User joined:', user)
                     if (!userShapes[user.id]) {

@@ -14,7 +14,20 @@ Vue.use(Vuex)
 
 window.store = new Vuex.Store({
     state: {
-        testCount: 0
+        testCount: 0,
+        users: []
+    },
+
+    mutations: {
+        setUser (state, user) {
+            console.log('in setUser mutation with', state, user)
+            state.users[user.id] = user
+        },
+
+        setUsers (state, users) {
+            console.log('in setUsers mutation with', state, users)
+            state.users = users
+        }
     }
 })
 
