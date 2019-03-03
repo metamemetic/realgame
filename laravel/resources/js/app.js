@@ -12,7 +12,7 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-window.store = new Vuex.Store({
+let store = new Vuex.Store({
     state: {
         testCount: 0,
         users: []
@@ -57,5 +57,6 @@ Vue.component('babylon-canvas', require('./components/BabylonCanvas.vue').defaul
  */
 
 const app = new Vue({
-    el: '#app'
+    el: '#app',
+    store
 });

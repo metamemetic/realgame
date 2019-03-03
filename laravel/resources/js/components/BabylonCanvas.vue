@@ -12,31 +12,19 @@
         props: ['me'],
 
         computed: {
-            // ...mapGetters([
-            //     'getUserById'
-            // ]),
+            ...mapGetters([
+                'getUserById'
+            ]),
 
             users() {
                 return window.store.state.users
-            },
-            //
-            // user(id) {
-            //     return window.store.state.users[id]
-            // }
+            }
         },
 
         methods: {
-            addUser() {
-                window.store.commit('addUser')
-            },
-
             setUsers(users) {
-                window.store.commit('setUsers', users)
-            },
-
-            // getUserById(id) {
-            //     window.store.getUserById(id)
-            // }
+                this.$store.commit('setUsers', users)
+            }
         },
 
         mounted() {
@@ -133,25 +121,6 @@
             var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
             advancedTexture.idealWidth = 600;
 
-            // let theuser = this.user
-
-            // Listen for user locations and update userShapes array with user object accordingly
-            Echo.private('locations')
-                .listenForWhisper('location', (e) => {
-                    console.log('Location received:'); // , e
-                    // console.log('userShapes:', userShapes)
-                    if (userShapes[e.userId]) {
-                        userShapes[e.userId].x = e.x
-                        userShapes[e.userId].z = e.z
-                        userShapes[e.userId].shape.position.x = e.x
-                        userShapes[e.userId].shape.position.z = e.z
-                    } else {
-                        console.log('Could not find userShape with user id ' + e.userId)
-                        makeShape(e.x, e.z, e.userId, window.store.getters.getUserById(e.userId).name) //
-                    }
-
-                });
-
             // Function to broadcast user location
             var sendLocation = function () {
                 let x = Math.floor(shape.position.x * 10000) / 10000
@@ -165,6 +134,7 @@
                 setTimeout(sendLocation, locationSendInterval)
             }
 
+            // Start the sendLocation loop
             sendLocation()
 
             // Function to draw a new user cone with initial position
@@ -195,6 +165,21 @@
                     tag: rect1
                 }
             }
+
+            // Listen for user locations and update userShapes array with user object accordingly
+            Echo.private('locations')
+                .listenForWhisper('location', (e) => {
+                    const { x, z, userId } = e
+                    if (userShapes[userId]) {
+                        userShapes[userId].x = x
+                        userShapes[userId].z = z
+                        userShapes[userId].shape.position.x = x
+                        userShapes[userId].shape.position.z = z
+                    } else {
+                        const { name } = this.getUserById(userId)
+                        makeShape(x, z, userId, name)
+                    }
+                });
 
             // Join the presence channel and handle others joining/leaving
             Echo.join('online')
