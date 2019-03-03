@@ -15,12 +15,9 @@
             }
         },
         mounted() {
-            console.log('me:', this.me)
+            console.log('Current user:', this.me)
 
-            function onNewGamepadConnected(gamepad) {
-                console.log('what this gamepad', gamepad)
-            }
-
+            // Create the Babylon engine and attach to canvas
             var canvas = document.getElementById("renderCanvas");
             var engine = new BABYLON.Engine(canvas, true);
 
@@ -28,69 +25,45 @@
             var scene = new BABYLON.Scene(engine);
 
             // Add a camera to the scene and attach it to the canvas
-            // var camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2.22, 2, new BABYLON.Vector3(0,1,0), scene);
             var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1, 0), scene);
-            camera.setTarget(new BABYLON.Vector3(0,1.5,-100));
-            // camera.attachControl(canvas, true);
-
+            camera.setTarget(new BABYLON.Vector3(0, 1.5, -100));
 
             // Make the ground
             var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, scene);
             ground.material = new BABYLON.GridMaterial("groundMaterial", scene);
 
-            // Try a light from the playground w cone
+            // Add a hemispheric light
             var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
         	light.intensity = 0.7;
 
-            // Sky material
+            // Add skybox
         	var skyboxMaterial = new BABYLON.SkyMaterial("skyMaterial", scene);
             skyboxMaterial.backFaceCulling = false;
-
-        	// Sky mesh (box)
             var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, scene);
             skybox.material = skyboxMaterial;
-
-            function rotateVector(vect, quat) {
-                var matr = new BABYLON.Matrix();
-                quat.toRotationMatrix(matr);
-                var rotatedvect = BABYLON.Vector3.TransformCoordinates(vect, matr);
-                return rotatedvect;
-            }
-
-            var setSkyConfig = function (property, from, to) {
-        		var keys = [
-                    { frame: 0, value: from },
-                    { frame: 120, value: from },
-        			{ frame: 520, value: to }
-                ];
-
-        		var animation = new BABYLON.Animation("animation", property, 100, BABYLON.Animation.ANIMATIONTYPE_FLOAT, BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT);
-        		animation.setKeys(keys);
-
-        		scene.stopAnimation(skybox);
-        		scene.beginDirectAnimation(skybox, [animation], 0, 520, false, 1);
-        	};
 
             // Initial sky config - https://doc.babylonjs.com/extensions/sky
             skyboxMaterial.inclination = 0.49
             skyboxMaterial.azimuth = 0.25
 
-            // Add cone, make invisible, attach camera
+            // Add cone for user, make invisible, attach camera
             var shape = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
         	shape.position = new BABYLON.Vector3(0, 1, 0);
             shape.rotation.y = Math.PI * 2
-
             shape.visibility = 0
             camera.parent = shape;
 
+            // Run the render loop
             engine.runRenderLoop(function () {
                 scene.render();
             });
 
+            // Resize canvas properly on browser window resize
             window.addEventListener("resize", function () {
                 engine.resize();
             });
 
+            // Prepare to handle keyboard input
             var inputMap = {};
             scene.actionManager = new BABYLON.ActionManager(scene);
             scene.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, function (evt) {
@@ -100,30 +73,28 @@
                 inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
             }));
 
+            // Defined how fast the user moves forward/back and turns
             var throttle = .15;
             var turnspeed = .03;
 
-            // // Game/Render loop
+            // Game/Render loop
             scene.onBeforeRenderObservable.add(()=>{
+
+                // Handle WASD movement
                 if(inputMap["w"] || inputMap["ArrowUp"]){
-                    // shape.position.z-=0.1
                     shape.translate(BABYLON.Axis.Z, -throttle, BABYLON.Space.LOCAL)
                 }
                 if(inputMap["a"] || inputMap["ArrowLeft"]){
-                    // shape.position.x+=0.1
-                    // shape.translate(BABYLON.Axis.X, -throttle, BABYLON.Space.LOCAL)
                     shape.rotation.y -= turnspeed;
                 }
                 if(inputMap["s"] || inputMap["ArrowDown"]){
-                    // shape.position.z+=0.1
                     shape.translate(BABYLON.Axis.Z, throttle, BABYLON.Space.LOCAL)
                 }
                 if(inputMap["d"] || inputMap["ArrowRight"]){
-                    // shape.position.x-=0.1
-                    // shape.translate(BABYLON.Axis.X, throttle, BABYLON.Space.LOCAL)
                     shape.rotation.y += turnspeed;
                 }
 
+                // Move username tags to current position of each user cone
                 userShapes.forEach(shape => {
                     shape.tag.moveToVector3(new BABYLON.Vector3(shape.shape.position.x, 3.2, shape.shape.position.z), scene)
                 })
@@ -131,13 +102,17 @@
 
             var userId = this.me.id
             var userShapes = []
+            var locationSendInterval = 1000 // Send location updates every X milliseconds
+
+            // Set up the UI
             var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
             advancedTexture.idealWidth = 600;
 
+            // Listen for user locations and update userShapes array with user object accordingly
             Echo.private('locations')
                 .listenForWhisper('location', (e) => {
-                    console.log('Location received:', e);
-                    console.log('userShapes:', userShapes)
+                    console.log('Location received:'); // , e
+                    // console.log('userShapes:', userShapes)
                     if (userShapes[e.userId]) {
                         userShapes[e.userId].x = e.x
                         userShapes[e.userId].z = e.z
@@ -150,6 +125,7 @@
 
                 });
 
+            // Function to broadcast user location
             var sendLocation = function () {
                 let x = Math.floor(shape.position.x * 10000) / 10000
                 let z = Math.floor(shape.position.z * 10000) / 10000
@@ -159,85 +135,31 @@
                         x, z, userId
                     })
 
-                setTimeout(sendLocation, 1000)
+                setTimeout(sendLocation, locationSendInterval)
             }
 
             sendLocation()
 
-            // scene.registerBeforeRender(function() {
-            //     // console.log('test')
-            //
-            //     userShapes.forEach(shape => {
-            //         shape.tag.moveToVector3(shape.shape.position.x, 3, shape.shape.position.z)
-            //     })
-            //     // console.log('----')
-            // })
-
-
-            // scene.registerBeforeRender(function() {
-            //     rect1.moveToVector3(new BABYLON.Vector3(0, 1, 0))
-            // })
-
+            // Function to draw a new user cone with initial position
             var makeShape = function (x, z, userId, name) {
                 console.log('making shape with name ' + name)
                 let userShape = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
                 userShape.position = new BABYLON.Vector3(0, 1, 0);
 
-
-
-                // GUI
-                // var rect1 = new BABYLON.GUI.Rectangle();
-                // rect1.width = 0.2;
-                // rect1.height = "40px";
-                // rect1.cornerRadius = 20;
-                // rect1.color = "Orange";
-                // rect1.thickness = 4;
-                // rect1.background = "green";
-                // advancedTexture.addControl(rect1);
-                //
-                // var label = new BABYLON.GUI.TextBlock();
-                // label.text = name;
-                // rect1.addControl(label);
-                //
-                // rect1.linkWithMesh(userShape);
-                // rect1.linkOffsetY = 0;
-
+                // Set up the initial username tag: a TextBlock inside an invisible rectangle
                 var rect1 = new BABYLON.GUI.Rectangle();
                 rect1.width = 0.2;
                 rect1.height = "25px";
                 rect1.cornerRadius = 20;
-                // rect1.color = "White";
                 rect1.thickness = 0;
-                // rect1.background = "#190529";
                 advancedTexture.addControl(rect1);
-                // rect1.moveToVector3(new BABYLON.Vector3(0, 5, 0), scene)
-
-                // rect1.linkWithMesh(userShape);
-                // rect1.linkOffsetY = -150;
 
                 var label = new BABYLON.GUI.TextBlock();
                 label.text = name;
                 label.color = "White"
                 rect1.addControl(label);
-                //
-                // var target = new BABYLON.GUI.Ellipse();
-                // target.width = "20px";
-                // target.height = "20px";
-                // target.color = "White";
-                // target.thickness = 4;
-                // target.background = "#190529";
-                // advancedTexture.addControl(target);
-                // target.linkWithMesh(userShape);
-                //
-                // var line = new BABYLON.GUI.Line();
-                // line.lineWidth = 4;
-                // line.color = "White";
-                // line.y2 = 40;
-                // line.linkOffsetY = -10;
-                // advancedTexture.addControl(line);
-                // line.linkWithMesh(userShape);
-                // line.connectedControl = rect1;
 
+                // Update the userShapes array with user object
                 userShapes[userId] = {
                     name,
                     x,
@@ -247,6 +169,7 @@
                 }
             }
 
+            // Join the presence channel and handle others joining/leaving
             Echo.join('online')
                 .here(users => (this.users = users))
                 .joining(user => {
