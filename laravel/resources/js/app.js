@@ -15,24 +15,33 @@ Vue.use(Vuex)
 let store = new Vuex.Store({
     state: {
         testCount: 0,
-        users: []
+        users: [],
+        scene: null
     },
 
     mutations: {
         setUser (state, user) {
-            console.log('in setUser mutation with', state, user)
             state.users[user.id] = user
         },
 
         setUsers (state, users) {
-            console.log('in setUsers mutation with', state, users)
-            state.users = users
+            users.forEach(user => {
+                state.users[user.id] = user
+            })
         }
     },
 
     getters: {
+        getUsers: (state) => {
+            return state.users
+        },
+
         getUserById: (state) => (id) => {
-            return state.users.find(user => user.id === id)
+            return state.users.find(user => {
+                if (user) {
+                    return user.id === id
+                }
+            })
         }
     }
 })

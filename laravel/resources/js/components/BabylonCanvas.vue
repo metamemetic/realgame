@@ -3,7 +3,7 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex'
+    import { mapGetters, mapMutations } from 'vuex'
     import * as BABYLON from 'babylonjs';
     import 'babylonjs-materials';
     import 'babylonjs-gui';
@@ -12,19 +12,21 @@
         props: ['me'],
 
         computed: {
-            ...mapGetters([
-                'getUserById'
-            ]),
-
             users() {
                 return window.store.state.users
             }
         },
 
         methods: {
-            setUsers(users) {
-                this.$store.commit('setUsers', users)
-            }
+            ...mapGetters([
+                'getUserById',
+                'getUsers'
+            ]),
+
+            ...mapMutations([
+                'setUser',
+                'setUsers'
+            ])
         },
 
         mounted() {
@@ -107,9 +109,13 @@
                     shape.rotation.y += turnspeed;
                 }
 
+                var users = this.getUsers()
+
                 // Move username tags to current position of each user cone
-                userShapes.forEach(shape => {
-                    shape.tag.moveToVector3(new BABYLON.Vector3(shape.shape.position.x, 3.2, shape.shape.position.z), scene)
+                users.forEach(user => {
+                    if (user && user.tag && user.shape) {
+                        user.tag.moveToVector3(new BABYLON.Vector3(user.shape.position.x, 3.2, user.shape.position.z), scene)
+                    }
                 })
             })
 
@@ -138,8 +144,7 @@
             sendLocation()
 
             // Function to draw a new user cone with initial position
-            var makeShape = function (x, z, userId, name) {
-                console.log('making shape with name ' + name)
+            let makeShape = (x, z, userId, name) => { // , that
                 let userShape = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
                 userShape.position = new BABYLON.Vector3(0, 1, 0);
 
@@ -156,27 +161,35 @@
                 label.color = "White"
                 rect1.addControl(label);
 
-                // Update the userShapes array with user object
-                userShapes[userId] = {
-                    name,
-                    x,
-                    z,
-                    shape: userShape,
-                    tag: rect1
-                }
+                let userGetter = this.getUserById(userId)
+                let user = userGetter(userId)
+
+                user.shape = userShape
+                user.tag = rect1
+
+                this.setUser(user)
+                console.log('Added new shape to user:', user)
             }
 
-            // Listen for user locations and update userShapes array with user object accordingly
+            // Listen for user locations and update user store with user object accordingly
             Echo.private('locations')
                 .listenForWhisper('location', (e) => {
                     const { x, z, userId } = e
-                    if (userShapes[userId]) {
-                        userShapes[userId].x = x
-                        userShapes[userId].z = z
-                        userShapes[userId].shape.position.x = x
-                        userShapes[userId].shape.position.z = z
+
+                    let userGetter = this.getUserById(userId)
+                    const user = userGetter(userId)
+
+                    if (user && user.shape) {
+                        user.id = userId
+                        user.x = x
+                        user.z = z
+                        user.shape.position.x = x
+                        user.shape.position.z = z
+
+                        this.setUser(user)
                     } else {
-                        const { name } = this.getUserById(userId)
+                        let userGetter = this.getUserById(userId)
+                        const { name } = userGetter(userId)
                         makeShape(x, z, userId, name)
                     }
                 });
@@ -186,7 +199,7 @@
                 .here(users => this.setUsers(users))
                 .joining(user => {
                     console.log('User joined:', user)
-                    if (!userShapes[user.id]) {
+                    if (!this.$store.state.users[user.id]) {
                         makeShape(0, 0, user.id, user.name)
                     }
                 })
