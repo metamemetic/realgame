@@ -25,7 +25,8 @@
 
             ...mapMutations([
                 'setUser',
-                'setUsers'
+                'setUsers',
+                'removeUserById'
             ])
         },
 
@@ -144,7 +145,7 @@
             sendLocation()
 
             // Function to draw a new user cone with initial position
-            let makeShape = (x, z, userId, name) => { // , that
+            let makeShape = (x, z, user) => { // , that
                 let userShape = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
                 userShape.position = new BABYLON.Vector3(0, 1, 0);
 
@@ -157,12 +158,9 @@
                 advancedTexture.addControl(rect1);
 
                 var label = new BABYLON.GUI.TextBlock();
-                label.text = name;
+                label.text = user.name;
                 label.color = "White"
                 rect1.addControl(label);
-
-                let userGetter = this.getUserById(userId)
-                let user = userGetter(userId)
 
                 user.shape = userShape
                 user.tag = rect1
@@ -187,10 +185,10 @@
                         user.shape.position.z = z
 
                         this.setUser(user)
+                    } else if (user) {
+                        makeShape(x, z, user)
                     } else {
-                        let userGetter = this.getUserById(userId)
-                        const { name } = userGetter(userId)
-                        makeShape(x, z, userId, name)
+                        console.log('WAT HAPPEN')
                     }
                 });
 
@@ -200,11 +198,18 @@
                 .joining(user => {
                     console.log('User joined:', user)
                     if (!this.$store.state.users[user.id]) {
-                        makeShape(0, 0, user.id, user.name)
+                        makeShape(0, 0, user)
                     }
                 })
                 .leaving(user => {
                     console.log('User left:', user)
+
+                    this.removeUserById(user.id)
+                    // user.shape.dispose()
+                    // this.$store.state.users[user.id] = undefined
+                    // user.tag.dispose()
+                    // user.shape.visibility = 0
+                    // user.tag.visibility = 0
                 })
         }
     }

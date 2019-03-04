@@ -28,6 +28,13 @@ let store = new Vuex.Store({
             users.forEach(user => {
                 state.users[user.id] = user
             })
+        },
+
+        removeUserById (state, userId) {
+            const user = state.users[userId]
+            user.shape.dispose()
+            user.tag.dispose()
+            state.users[userId] = undefined
         }
     },
 
