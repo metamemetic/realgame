@@ -39,9 +39,41 @@
 
             // Create the scene space
             var scene = new BABYLON.Scene(engine);
+            var assetsManager = new BABYLON.AssetsManager(scene);
+            assetsManager.useDefaultLoadingScreen = false;
+            var meshTask = assetsManager.addMeshTask("steve", "", "/models/", "steve.babylon");
+
+            var STEVE_MODEL = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
+            STEVE_MODEL.visibility = 0
+
+            meshTask.onSuccess = function (task) {
+                console.log(task)
+                var meshes = task.loadedMeshes
+                meshes.forEach(mesh => {
+                    mesh.parent = STEVE_MODEL
+                    // mesh.scalingDeterminant = 0.1
+                    mesh.isVisible = false
+                    // mesh.scaling = new BABYLON.Vector3(0.5,0.5,0.5);
+                    // mesh.visibility = 0
+                })
+
+                // console.log('so')
+                // task.loadedMeshes[0].position = BABYLON.Vector3.Zero();
+
+                // var m = task.loadedMeshes
+                // m.isVisible = false
+                //
+                // STEVE_MODEL = task.loadedMeshes[0]
+            }
+
+            meshTask.onError = function (task, message, exception) {
+                console.log(message, exception);
+            }
+
+            assetsManager.load()
 
             // Add a camera to the scene and attach it to the canvas
-            var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 1, 0), scene);
+            var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 6, 0), scene);
             camera.setTarget(new BABYLON.Vector3(0, 1.5, -100));
 
             // Make the ground
@@ -115,7 +147,7 @@
                 // Move username tags to current position of each user cone
                 users.forEach(user => {
                     if (user && user.tag && user.shape) {
-                        user.tag.moveToVector3(new BABYLON.Vector3(user.shape.position.x, 3.2, user.shape.position.z), scene)
+                        user.tag.moveToVector3(new BABYLON.Vector3(user.shape.position.x, 10.5, user.shape.position.z), scene)
                     }
                 })
             })
@@ -146,8 +178,17 @@
 
             // Function to draw a new user cone with initial position
             let makeShape = (x, z, user) => { // , that
-                let userShape = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
+                // let userShape = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
+                console.log('STEVE_MODEL', STEVE_MODEL)
+
+                let userShape = STEVE_MODEL.clone(STEVE_MODEL.name)
+
+                userShape._children.forEach(child => {
+                    child.isVisible = true
+                })
+
                 userShape.position = new BABYLON.Vector3(0, 1, 0);
+                userShape.isVisible = true
 
                 // Set up the initial username tag: a TextBlock inside an invisible rectangle
                 var rect1 = new BABYLON.GUI.Rectangle();
