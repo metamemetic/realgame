@@ -222,14 +222,16 @@
                     const user = userGetter(userId)
 
                     if (user && user.shape) {
+                        user.shape.animations = [];
                         user.id = userId
-                        // user.x = x
-                        // user.z = z
-                        // user.shape.position.x = x
-                        // user.shape.position.z = z
 
-                        var animationBox = new BABYLON.Animation("myAnimation", "position", 30,
+                        var positionInterpolate = new BABYLON.Animation("positionInterpolate", "position", 30,
                             BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+                            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+                        );
+
+                        var rotationInterpolate = new BABYLON.Animation("positionInterpolate", "rotation.y", 30,
+                            BABYLON.Animation.ANIMATIONTYPE_FLOAT,
                             BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
                         );
 
@@ -249,14 +251,30 @@
                           ),
                         });
 
-                        animationBox.setKeys(keys);
+                        var rotationKeys = []
+
+                        rotationKeys.push({
+                            frame: 0,
+                            value: user.shape.rotation.y
+                        })
+
+                        rotationKeys.push({
+                            frame: 30,
+                            value: ry + 270 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
+                        })
+
+                        positionInterpolate.setKeys(keys);
+                        rotationInterpolate.setKeys(rotationKeys);
+
+
                         // user.shape.animations = [];
-                        user.shape.animations.push(animationBox);
+                        user.shape.animations.push(positionInterpolate);
+                        user.shape.animations.push(rotationInterpolate);
                         console.log('user.shape.animations:', user.shape.animations)
 
                         scene.beginAnimation(user.shape, 0, 30, false);
 
-                        user.shape.rotation.y = ry + 270 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
+                        // user.shape.rotation.y = ry + 270 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
 
                         this.setUser(user)
                     } else if (user) {
