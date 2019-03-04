@@ -223,10 +223,39 @@
 
                     if (user && user.shape) {
                         user.id = userId
-                        user.x = x
-                        user.z = z
-                        user.shape.position.x = x
-                        user.shape.position.z = z
+                        // user.x = x
+                        // user.z = z
+                        // user.shape.position.x = x
+                        // user.shape.position.z = z
+
+                        var animationBox = new BABYLON.Animation("myAnimation", "position", 30,
+                            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+                            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+                        );
+
+                        var keys = [];
+
+                        keys.push({
+                          frame: 0,
+                          value: user.shape.position,
+                        });
+
+                        keys.push({
+                          frame: 30,
+                          value: new BABYLON.Vector3(
+                              x,
+                              user.shape.position.y,
+                              z
+                          ),
+                        });
+
+                        animationBox.setKeys(keys);
+                        // user.shape.animations = [];
+                        user.shape.animations.push(animationBox);
+                        console.log('user.shape.animations:', user.shape.animations)
+
+                        scene.beginAnimation(user.shape, 0, 30, false);
+
                         user.shape.rotation.y = ry + 270 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
 
                         this.setUser(user)
