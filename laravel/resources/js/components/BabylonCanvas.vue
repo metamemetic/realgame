@@ -53,6 +53,7 @@
                     mesh.parent = STEVE_MODEL
                     // mesh.scalingDeterminant = 0.1
                     mesh.isVisible = false
+
                     // mesh.scaling = new BABYLON.Vector3(0.5,0.5,0.5);
                     // mesh.visibility = 0
                 })
@@ -74,7 +75,7 @@
 
             // Add a camera to the scene and attach it to the canvas
             var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 6, 0), scene);
-            camera.setTarget(new BABYLON.Vector3(0, 1.5, -100));
+            // camera.setTarget(new BABYLON.Vector3(0, 1.5, -100));
 
             // Make the ground
             var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, scene);
@@ -97,7 +98,7 @@
             // Add cone for user, make invisible, attach camera
             var shape = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
         	shape.position = new BABYLON.Vector3(0, 1, 0);
-            shape.rotation.y = Math.PI * 2
+            shape.rotation.y = Math.PI // Math.PI * 2
             shape.visibility = 0
             camera.parent = shape;
 
@@ -130,13 +131,13 @@
 
                 // Handle WASD movement
                 if(inputMap["w"] || inputMap["ArrowUp"]){
-                    shape.translate(BABYLON.Axis.Z, -throttle, BABYLON.Space.LOCAL)
+                    shape.translate(BABYLON.Axis.Z, throttle, BABYLON.Space.LOCAL)
                 }
                 if(inputMap["a"] || inputMap["ArrowLeft"]){
                     shape.rotation.y -= turnspeed;
                 }
                 if(inputMap["s"] || inputMap["ArrowDown"]){
-                    shape.translate(BABYLON.Axis.Z, throttle, BABYLON.Space.LOCAL)
+                    shape.translate(BABYLON.Axis.Z, -throttle, BABYLON.Space.LOCAL)
                 }
                 if(inputMap["d"] || inputMap["ArrowRight"]){
                     shape.rotation.y += turnspeed;
@@ -165,9 +166,11 @@
                 let x = Math.floor(shape.position.x * 10000) / 10000
                 let z = Math.floor(shape.position.z * 10000) / 10000
 
+                let ry = Math.floor(shape.rotation.y * 10000) / 10000
+
                 Echo.private('locations')
                     .whisper('location', {
-                        x, z, userId
+                        ry, x, z, userId
                     })
 
                 setTimeout(sendLocation, locationSendInterval)
@@ -213,7 +216,7 @@
             // Listen for user locations and update user store with user object accordingly
             Echo.private('locations')
                 .listenForWhisper('location', (e) => {
-                    const { x, z, userId } = e
+                    const { ry, x, z, userId } = e
 
                     let userGetter = this.getUserById(userId)
                     const user = userGetter(userId)
@@ -224,6 +227,7 @@
                         user.z = z
                         user.shape.position.x = x
                         user.shape.position.z = z
+                        user.shape.rotation.y = ry + 270 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
 
                         this.setUser(user)
                     } else if (user) {

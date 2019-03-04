@@ -32,8 +32,12 @@ let store = new Vuex.Store({
 
         removeUserById (state, userId) {
             const user = state.users[userId]
-            user.shape.dispose()
-            user.tag.dispose()
+            if (user.shape) {
+                user.shape.dispose()
+            }
+            if (user.tag) {
+                user.tag.dispose()
+            }            
             state.users[userId] = undefined
         }
     },
