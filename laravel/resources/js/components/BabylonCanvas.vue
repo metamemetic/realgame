@@ -51,20 +51,8 @@
                 var meshes = task.loadedMeshes
                 meshes.forEach(mesh => {
                     mesh.parent = STEVE_MODEL
-                    // mesh.scalingDeterminant = 0.1
                     mesh.isVisible = false
-
-                    // mesh.scaling = new BABYLON.Vector3(0.5,0.5,0.5);
-                    // mesh.visibility = 0
                 })
-
-                // console.log('so')
-                // task.loadedMeshes[0].position = BABYLON.Vector3.Zero();
-
-                // var m = task.loadedMeshes
-                // m.isVisible = false
-                //
-                // STEVE_MODEL = task.loadedMeshes[0]
             }
 
             meshTask.onError = function (task, message, exception) {
@@ -181,9 +169,6 @@
 
             // Function to draw a new user cone with initial position
             let makeShape = (x, z, user) => { // , that
-                // let userShape = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
-                console.log('STEVE_MODEL', STEVE_MODEL)
-
                 let userShape = STEVE_MODEL.clone(STEVE_MODEL.name)
 
                 userShape._children.forEach(child => {
@@ -235,14 +220,14 @@
                             BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
                         );
 
-                        var keys = [];
+                        var positionKeys = [];
 
-                        keys.push({
+                        positionKeys.push({
                           frame: 0,
                           value: user.shape.position,
                         });
 
-                        keys.push({
+                        positionKeys.push({
                           frame: 30,
                           value: new BABYLON.Vector3(
                               x,
@@ -263,18 +248,13 @@
                             value: ry + 270 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
                         })
 
-                        positionInterpolate.setKeys(keys);
+                        positionInterpolate.setKeys(positionKeys);
                         rotationInterpolate.setKeys(rotationKeys);
 
-
-                        // user.shape.animations = [];
                         user.shape.animations.push(positionInterpolate);
                         user.shape.animations.push(rotationInterpolate);
-                        console.log('user.shape.animations:', user.shape.animations)
 
                         scene.beginAnimation(user.shape, 0, 30, false);
-
-                        // user.shape.rotation.y = ry + 270 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
 
                         this.setUser(user)
                     } else if (user) {
@@ -295,13 +275,7 @@
                 })
                 .leaving(user => {
                     console.log('User left:', user)
-
                     this.removeUserById(user.id)
-                    // user.shape.dispose()
-                    // this.$store.state.users[user.id] = undefined
-                    // user.tag.dispose()
-                    // user.shape.visibility = 0
-                    // user.tag.visibility = 0
                 })
         }
     }
