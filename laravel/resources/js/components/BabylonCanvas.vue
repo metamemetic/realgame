@@ -9,7 +9,7 @@
     import 'babylonjs-gui';
 
     export default {
-        props: ['me'],
+        // props: ['me'],
 
         computed: {
             users() {
@@ -31,7 +31,9 @@
         },
 
         mounted() {
-            console.log('Current user:', this.me)
+            // console.log('Current user:', this.me)
+
+            this.$store.commit('setAuthUser', window.auth_user);
 
             // Create the Babylon engine and attach to canvas
             var canvas = document.getElementById("renderCanvas");
@@ -141,7 +143,9 @@
                 })
             })
 
-            var userId = this.me.id
+            var userId = this.$store.state.user
+                ? this.$store.state.user.id
+                : null
             var userShapes = []
             var locationSendInterval = 1000 // Send location updates every X milliseconds
 

@@ -14,12 +14,17 @@ Vue.use(Vuex)
 
 let store = new Vuex.Store({
     state: {
+        user: null,
         testCount: 0,
         users: [],
         scene: null
     },
 
     mutations: {
+        setAuthUser(state, user) {
+            state.user = user;
+        },
+
         setUser (state, user) {
             state.users[user.id] = user
         },
@@ -37,12 +42,16 @@ let store = new Vuex.Store({
             }
             if (user.tag) {
                 user.tag.dispose()
-            }            
+            }
             state.users[userId] = undefined
         }
     },
 
     getters: {
+        isLoggedIn(state) {
+            return state.user !== null;
+        },
+
         getUsers: (state) => {
             return state.users
         },

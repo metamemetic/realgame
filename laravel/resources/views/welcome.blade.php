@@ -30,12 +30,9 @@
     </head>
     <body>
         <div id="app" class="full-height">
-            @if (Auth::check())
-                <babylon-canvas :me='@json(auth()->user()->toArray())'></babylon-canvas>
-            @else
-                <babylon-canvas :me='@json(["user" => null])'></babylon-canvas>
-            @endif
+            <babylon-canvas></babylon-canvas>
         </div>
+        <script>window.auth_user = {!! json_encode($auth_user); !!};</script>
         <script src="{{ mix('js/app.js') }}"></script>
         <script src="//code.jquery.com/pep/0.4.0/pep.min.js"></script>
     </body>
