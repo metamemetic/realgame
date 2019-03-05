@@ -249,7 +249,7 @@
 
                         rotationKeys.push({
                             frame: 30,
-                            value: ry + 270 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
+                            value: ry - 90 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
                         })
 
                         positionInterpolate.setKeys(positionKeys);
