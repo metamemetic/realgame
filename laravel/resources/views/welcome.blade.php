@@ -26,10 +26,48 @@
                 display: flex;
                 justify-content: center;
             }
+
+            .button-container {
+                position: fixed;
+                bottom: 30px;
+                left: 0;
+                right: 0;
+                text-align: center;
+            }
+
+            .loginbutton {
+                width: 150px;
+                height: 50px;
+                margin: 0 15px;
+                border-radius: 15px;
+                background-color: #190529;
+                font-family: monospace;
+                color: white;
+                font-size: 18px;
+            }
+
+            .loginbutton:hover {
+                opacity: 0.8;
+            }
+
+            .loginbutton:active,
+            .loginbutton:focus {
+                outline: none;
+            }
         </style>
     </head>
     <body>
         <div id="app" class="full-height">
+            @if (!Auth::check())
+                <div class="button-container">
+                    <a href="/login">
+                        <button class="loginbutton">Login</button>
+                    </a>
+                    <a href="/register">
+                        <button class="loginbutton">Register</button>
+                    </a>
+                </div>
+            @endif
             <babylon-canvas></babylon-canvas>
         </div>
         <script>window.auth_user = {!! json_encode($auth_user); !!};</script>
