@@ -51,9 +51,13 @@
     line-height: 200px;
 	color: rgba(169,3,41, 0.8);
 }
-.cb-slideshow li:nth-child(1) span { background-image: url(../images/1.jpg) }
+.cb-slideshow li:nth-child(1) span {
+    background-image: url(../images/1.jpg);
+    background-position: center bottom;
+}
 .cb-slideshow li:nth-child(2) span {
     background-image: url(../images/2.jpg);
+    background-position: center bottom;
     -webkit-animation-delay: 6s;
     -moz-animation-delay: 6s;
     -o-animation-delay: 6s;
@@ -70,6 +74,7 @@
 }
 .cb-slideshow li:nth-child(4) span {
     background-image: url(../images/4.jpg);
+    background-position: center bottom;
     -webkit-animation-delay: 18s;
     -moz-animation-delay: 18s;
     -o-animation-delay: 18s;
@@ -78,6 +83,7 @@
 }
 .cb-slideshow li:nth-child(5) span {
     background-image: url(../images/5.jpg);
+    background-position: center bottom;
     -webkit-animation-delay: 24s;
     -moz-animation-delay: 24s;
     -o-animation-delay: 24s;
@@ -86,6 +92,7 @@
 }
 .cb-slideshow li:nth-child(6) span {
     background-image: url(../images/6.jpg);
+    background-position: center bottom;
     -webkit-animation-delay: 30s;
     -moz-animation-delay: 30s;
     -o-animation-delay: 30s;
