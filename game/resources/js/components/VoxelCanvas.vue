@@ -9,7 +9,28 @@
     import 'babylonjs-gui';
 
     export default {
+        computed: {
+            users() {
+                return window.store.state.users
+            }
+        },
+
+        methods: {
+            ...mapGetters([
+                'getUserById',
+                'getUsers'
+            ]),
+
+            ...mapMutations([
+                'setUser',
+                'setUsers',
+                'removeUserById'
+            ])
+        },
+
         mounted() {
+            this.$store.commit('setAuthUser', window.auth_user);
+
             var engine = require('noa-engine')
 
             var noa = engine({
@@ -19,6 +40,8 @@
             console.log('noa:', noa)
 
             let scene = noa.rendering.getScene()  // Babylon's "Scene" object
+            var assetsManager = new BABYLON.AssetsManager(scene);
+            assetsManager.useDefaultLoadingScreen = false;
 
             // Make the ground
             var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, scene);
@@ -52,6 +75,7 @@
             // add a listener for when the engine requests a new world chunk
             // `data` is an ndarray - see https://github.com/scijs/ndarray
             noa.world.on('worldDataNeeded', function (id, data, x, y, z) {
+                // console.log(id + ' - data ndarray right now is:', data)
             	// populate ndarray with world data (block IDs or 0 for air)
             	for (let i = 0; i < data.shape[0]; ++i) {
             		for (let k = 0; k < data.shape[2]; ++k) {
@@ -73,7 +97,7 @@
             function getHeightMap(x, z) {
             	let xs = 0.8 + Math.sin(x / 10)
             	let zs = 0.4 + Math.sin(z / 15 + x / 30)
-            	return xs + zs + 0.5
+            	return xs + zs
             }
 
             let player = require('../player')({
@@ -154,6 +178,46 @@
             	if (zoom > maxZoom) zoom = maxZoom
             	noa.rendering.zoomDistance = zoom
             })
+
+            var userId = this.$store.state.user
+                ? this.$store.state.user.id
+                : null
+            var locationSendInterval = 1000 // Send location updates every X milliseconds
+
+            // Function to broadcast user location
+            var sendLocation = function () {
+                let x = Math.floor(player_mesh.position.x * 10000) / 10000
+                let y = Math.floor(player_mesh.position.y * 10000) / 10000
+                let z = Math.floor(player_mesh.position.z * 10000) / 10000
+
+                let ry = Math.floor(player_mesh.rotation.y * 10000) / 10000
+
+                // console.log(x, y, z, ry)
+
+                Echo.private('locations')
+                    .whisper('location', {
+                        ry, x, y, z, userId
+                    })
+
+                setTimeout(sendLocation, locationSendInterval)
+            }
+
+            // Start the sendLocation loop
+            sendLocation()
+
+            // Join the presence channel and handle others joining/leaving
+            Echo.join('online')
+                .here(users => this.setUsers(users))
+                .joining(user => {
+                    console.log('User joined:', user)
+                    if (!this.$store.state.users[user.id]) {
+                        makeShape(0, 0, user)
+                    }
+                })
+                .leaving(user => {
+                    console.log('User left:', user)
+                    this.removeUserById(user.id)
+                })
 
         }
     }
