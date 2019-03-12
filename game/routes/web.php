@@ -12,16 +12,17 @@
 */
 
 Route::get('/', function () {
+    return view('voxel', [
+        'auth_user' => Auth::user()
+    ]);
+});
+
+Route::get('/old', function () {
     return view('welcome', [
         'auth_user' => Auth::user()
     ]);
 });
 
-Route::get('/voxel', function () {
-    return view('voxel', [
-        'auth_user' => Auth::user()
-    ]);
-});
 
 Auth::routes();
 
