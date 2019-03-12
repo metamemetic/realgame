@@ -59,6 +59,90 @@
             	return xs + zs
             }
 
+            let player = require('../player')({
+              	// Pass it a copy of the Babylon scene
+            	scene: scene,
+
+            	// Pass it the initial player color
+            	player_color: new BABYLON.Color4(0,0,255,0.8),
+
+            	// Pass it mesh height
+            	player_height: 1.5,
+            });
+
+            let player_mesh = player.get_player_mesh();
+            player_mesh.scaling.x = 0.65;
+            player_mesh.scaling.y = 0.65;
+            player_mesh.scaling.z = 0.65;
+
+            // Add a player component to the player entity
+            noa.entities.addComponent(noa.playerEntity, noa.entities.names.mesh, {
+            	mesh: player_mesh,
+            	offset: [0, player.get_player_height(), 0],
+            })
+
+            // Allow player mesh to be seen when in first person
+            noa.ents.getState(noa.playerEntity, noa.ents.names.fadeOnZoom).cutoff = 0.0;
+
+            // Rotate player with camera
+            scene.registerBeforeRender(function () {
+                noa.entities.getMeshData(noa.playerEntity).mesh.rotation.y = noa.rendering.getCameraRotation()[1];
+                player.update_particles();
+            });
+
+            // on left mouse, set targeted block to be air
+            noa.inputs.down.on('fire', function () {
+            	if (noa.targetedBlock) {
+            		noa.setBlock(0, noa.targetedBlock.position);
+            	} else {
+            		// Random color whenever something not a block is clicked
+            		player.set_player_color(new BABYLON.Color4(Math.random(), Math.random(), Math.random(), 0.8));
+            	}
+            })
+
+
+            // Add Player movement animation
+            document.onkeyup = function(e) {
+            	if (['87', '65', '83', '68', '37', '38', '39', '40'].indexOf(e.keyCode.toString()) > -1) {
+            	    if (player.is_walking()) {
+            	        player.stop_walking();
+            	    }
+            	}
+            };
+
+
+            document.onkeydown = function(e) {
+                if (['87', '65', '83', '68', '37', '38', '39', '40'].indexOf(e.keyCode.toString()) > -1) {
+                    if (!player.is_walking()) {
+                        player.start_walking();
+                    }
+                }
+            };
+
+            // on right mouse, place some grass
+            noa.inputs.down.on('alt-fire', function () {
+            	if (noa.targetedBlock) noa.addBlock(grassID, noa.targetedBlock.adjacent)
+            })
+
+            // add a key binding for "E" to do the same as alt-fire
+            noa.inputs.bind('alt-fire', 'E')
+
+            // each tick, consume any scroll events and use them to zoom camera
+            let zoom = 0
+            let minZoom = 0.1
+            let maxZoom = 10
+
+            noa.on('tick', function (dt) {
+            	let scroll = noa.inputs.state.scrolly
+            	if (scroll === 0) return
+
+            	// handle zoom controls
+            	zoom += (scroll > 0) ? 1 : -1
+            	if (zoom < minZoom) zoom = minZoom
+            	if (zoom > maxZoom) zoom = maxZoom
+            	noa.rendering.zoomDistance = zoom
+            })
+
         }
     }
 </script>
