@@ -20,6 +20,24 @@
 
             let scene = noa.rendering.getScene()  // Babylon's "Scene" object
 
+            // Make the ground
+            var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, scene);
+            ground.material = new BABYLON.GridMaterial("groundMaterial", scene);
+
+            // Add a hemispheric light
+            var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+        	light.intensity = 0.7;
+
+            // Add skybox
+        	var skyboxMaterial = new BABYLON.SkyMaterial("skyMaterial", scene);
+            skyboxMaterial.backFaceCulling = false;
+            var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, scene);
+            skybox.material = skyboxMaterial;
+
+            // Initial sky config - https://doc.babylonjs.com/extensions/sky
+            skyboxMaterial.inclination = 0.49
+            skyboxMaterial.azimuth = 0.25
+
             // register some block materials (just colors here)
             let textureURL = null // replace that to use a texture
             let brownish = [0.45, 0.36, 0.22]
@@ -40,8 +58,9 @@
             			let height = getHeightMap(x + i, z + k)
             			for (let j = 0; j < data.shape[1]; ++j) {
             				if (y + j < height) {
-            					if (y + j < 0) data.set(i, j, k, dirtID)
-            					else data.set(i, j, k, grassID);
+            					if (y + j >= 0) {
+                                    data.set(i, j, k, grassID);
+                                }
             				}
             			}
             		}
@@ -54,7 +73,7 @@
             function getHeightMap(x, z) {
             	let xs = 0.8 + Math.sin(x / 10)
             	let zs = 0.4 + Math.sin(z / 15 + x / 30)
-            	return xs + zs
+            	return xs + zs + 0.5
             }
 
             let player = require('../player')({
