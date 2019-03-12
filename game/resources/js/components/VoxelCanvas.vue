@@ -43,6 +43,27 @@
             var assetsManager = new BABYLON.AssetsManager(scene);
             assetsManager.useDefaultLoadingScreen = false;
 
+            // Temporarily use Steve mesh for other players
+            var meshTask = assetsManager.addMeshTask("steve", "", "/models/", "steve.babylon");
+
+            var STEVE_MODEL = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
+            STEVE_MODEL.visibility = 0
+
+            meshTask.onSuccess = function (task) {
+                console.log(task)
+                var meshes = task.loadedMeshes
+                meshes.forEach(mesh => {
+                    mesh.parent = STEVE_MODEL
+                    mesh.isVisible = false
+                })
+            }
+
+            meshTask.onError = function (task, message, exception) {
+                console.log(message, exception);
+            }
+
+            assetsManager.load()
+
             // Make the ground
             var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, scene);
             ground.material = new BABYLON.GridMaterial("groundMaterial", scene);
@@ -184,6 +205,22 @@
                 : null
             var locationSendInterval = 1000 // Send location updates every X milliseconds
 
+            // Set up the UI
+            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+            advancedTexture.idealWidth = 600;
+
+            // Game/Render loop
+            scene.onBeforeRenderObservable.add(()=>{
+                var users = this.getUsers()
+
+                // Move username tags to current position of each user cone
+                users.forEach(user => {
+                    if (user && user.tag && user.shape) {
+                        user.tag.moveToVector3(new BABYLON.Vector3(user.shape.position.x, 10.5, user.shape.position.z), scene)
+                    }
+                })
+            })
+
             // Function to broadcast user location
             var sendLocation = function () {
                 let x = Math.floor(player_mesh.position.x * 10000) / 10000
@@ -205,6 +242,37 @@
             // Start the sendLocation loop
             sendLocation()
 
+            // Function to draw a new user cone with initial position
+            let makeShape = (x, z, user) => { // , that
+                let userShape = STEVE_MODEL.clone(STEVE_MODEL.name)
+
+                userShape._children.forEach(child => {
+                    child.isVisible = true
+                })
+
+                userShape.position = new BABYLON.Vector3(0, 1, 0);
+                userShape.isVisible = true
+
+                // Set up the initial username tag: a TextBlock inside an invisible rectangle
+                var rect1 = new BABYLON.GUI.Rectangle();
+                rect1.width = 0.2;
+                rect1.height = "25px";
+                rect1.cornerRadius = 20;
+                rect1.thickness = 0;
+                advancedTexture.addControl(rect1);
+
+                var label = new BABYLON.GUI.TextBlock();
+                label.text = user.name;
+                label.color = "White"
+                rect1.addControl(label);
+
+                user.shape = userShape
+                user.tag = rect1
+
+                this.setUser(user)
+                console.log('Added new shape to user:', user)
+            }
+
             // Join the presence channel and handle others joining/leaving
             Echo.join('online')
                 .here(users => this.setUsers(users))
@@ -218,6 +286,72 @@
                     console.log('User left:', user)
                     this.removeUserById(user.id)
                 })
+
+            // Listen for user locations and update user store with user object accordingly
+            Echo.private('locations')
+                .listenForWhisper('location', (e) => {
+                    const { ry, x, z, userId } = e
+
+                    let userGetter = this.getUserById(userId)
+                    const user = userGetter(userId)
+
+                    if (user && user.shape) {
+                        user.shape.animations = [];
+                        user.id = userId
+
+                        var positionInterpolate = new BABYLON.Animation("positionInterpolate", "position", 30,
+                            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+                            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+                        );
+
+                        var rotationInterpolate = new BABYLON.Animation("positionInterpolate", "rotation.y", 30,
+                            BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+                            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+                        );
+
+                        var positionKeys = [];
+
+                        positionKeys.push({
+                          frame: 0,
+                          value: user.shape.position,
+                        });
+
+                        positionKeys.push({
+                          frame: 30,
+                          value: new BABYLON.Vector3(
+                              x,
+                              user.shape.position.y,
+                              z
+                          ),
+                        });
+
+                        var rotationKeys = []
+
+                        rotationKeys.push({
+                            frame: 0,
+                            value: user.shape.rotation.y
+                        })
+
+                        rotationKeys.push({
+                            frame: 30,
+                            value: ry - 90 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
+                        })
+
+                        positionInterpolate.setKeys(positionKeys);
+                        rotationInterpolate.setKeys(rotationKeys);
+
+                        user.shape.animations.push(positionInterpolate);
+                        user.shape.animations.push(rotationInterpolate);
+
+                        scene.beginAnimation(user.shape, 0, 30, false);
+
+                        this.setUser(user)
+                    } else if (user) {
+                        makeShape(x, z, user)
+                    } else {
+                        console.log('WAT HAPPEN')
+                    }
+                });
 
         }
     }
