@@ -290,7 +290,7 @@
             // Listen for user locations and update user store with user object accordingly
             Echo.private('locations')
                 .listenForWhisper('location', (e) => {
-                    const { ry, x, z, userId } = e
+                    const { ry, x, y, z, userId } = e
 
                     let userGetter = this.getUserById(userId)
                     const user = userGetter(userId)
@@ -320,7 +320,7 @@
                           frame: 30,
                           value: new BABYLON.Vector3(
                               x,
-                              user.shape.position.y,
+                              y,
                               z
                           ),
                         });
