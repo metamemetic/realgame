@@ -1,6 +1,6 @@
 var scene;
 
-var player;
+// var player;
 var player_mesh;
 var player_color;
 var update_player_skin = true;
@@ -13,23 +13,30 @@ var walking = false;
 var acceleration = 1.0;
 var player_height;
 
+var players = []
 
 function Player(opts) {
-  if (!(this instanceof Player)) return new Player(opts || {});
+  if (!(this instanceof Player)) {
+      console.log('returning something what...')
+      console.log(this instanceof Player)
+      return new Player(opts || {});
+  }
   scene = opts.scene;
   player_color = opts.player_color;
   player_height = opts.player_height;
+  name = opts.name
+  userId = opts.userId
 
   // Get each body part
   let body_parts_options = this.get_body_parts_options();
 
   // Create each of them
-  let player_head = BABYLON.MeshBuilder.CreateBox('player_head', body_parts_options[0], scene);
-  let player_body = BABYLON.MeshBuilder.CreateBox('player_body', body_parts_options[1], scene);
-  let player_right_arm = BABYLON.MeshBuilder.CreateBox('player_right_arm', body_parts_options[2], scene);
-  let player_left_arm = BABYLON.MeshBuilder.CreateBox('player_left_arm', body_parts_options[3], scene);
-  let player_right_leg = BABYLON.MeshBuilder.CreateBox('player_right_leg', body_parts_options[4], scene);
-  let player_left_leg = BABYLON.MeshBuilder.CreateBox('player_left_leg', body_parts_options[5], scene);
+  let player_head = BABYLON.MeshBuilder.CreateBox('player_head' + name, body_parts_options[0], scene);
+  let player_body = BABYLON.MeshBuilder.CreateBox('player_body' + name, body_parts_options[1], scene);
+  let player_right_arm = BABYLON.MeshBuilder.CreateBox('player_right_arm' + name, body_parts_options[2], scene);
+  let player_left_arm = BABYLON.MeshBuilder.CreateBox('player_left_arm' + name, body_parts_options[3], scene);
+  let player_right_leg = BABYLON.MeshBuilder.CreateBox('player_right_leg' + name, body_parts_options[4], scene);
+  let player_left_leg = BABYLON.MeshBuilder.CreateBox('player_left_leg' + name, body_parts_options[5], scene);
 
   // Add pivot/joints for arm and legs
   let matrix = BABYLON.Matrix.Translation(0, -0.5, 0);
@@ -38,7 +45,7 @@ function Player(opts) {
   player_right_leg.bakeTransformIntoVertices(matrix);
   player_left_leg.bakeTransformIntoVertices(matrix);
 
-  player = new BABYLON.SolidParticleSystem("Player", scene);
+  player = new BABYLON.SolidParticleSystem("Player" + name, scene);
   player.addShape(player_head, 1);
   player.addShape(player_body, 1);
   player.addShape(player_right_arm, 1);
@@ -124,7 +131,12 @@ function Player(opts) {
 
 module.exports = Player;
 
+// Player.prototype.areyawalkinnnnnn = function() {
+//     return areyawalking
+// }
+
 Player.prototype.update_particles = function() {
+    // console.log('Updating the particles for player:', player)
     player.setParticles();
 };
 
@@ -145,6 +157,7 @@ Player.prototype.set_player_color = function(color) {
 Player.prototype.start_walking = function() {
     let now = Date.now() / 1000;
     walking = true;
+    // console.log('Now player is walking! Which?', player)
 
     if (stopped_walking + acceleration > now) {
         let progress = now - stopped_walking;

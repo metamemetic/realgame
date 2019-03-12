@@ -10,14 +10,18 @@ require('./bootstrap');
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import players from './modules/players'
+
 Vue.use(Vuex)
 
 let store = new Vuex.Store({
+    modules: {
+        players
+    },
+
     state: {
         user: null,
-        testCount: 0,
-        users: [],
-        scene: null
+        users: []
     },
 
     mutations: {

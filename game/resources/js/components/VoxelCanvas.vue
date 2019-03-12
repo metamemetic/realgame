@@ -31,7 +31,12 @@
         mounted() {
             this.$store.commit('setAuthUser', window.auth_user);
 
+            var userId = this.$store.state.user
+                ? this.$store.state.user.id
+                : null
+
             var engine = require('noa-engine')
+            var Player = require('../player')
 
             var noa = engine({
                 playerHeight: 2.5
@@ -121,7 +126,7 @@
             	return xs + zs
             }
 
-            let player = require('../player')({
+            let player = new Player({
               	// Pass it a copy of the Babylon scene
             	scene: scene,
 
@@ -130,6 +135,10 @@
 
             	// Pass it mesh height
             	player_height: 1.5,
+
+                name: "This player",
+
+                userId
             });
 
             let player_mesh = player.get_player_mesh();
@@ -149,7 +158,9 @@
             // Rotate player with camera
             scene.registerBeforeRender(function () {
                 noa.entities.getMeshData(noa.playerEntity).mesh.rotation.y = noa.rendering.getCameraRotation()[1];
-                player.update_particles();
+                player.update_particles(); // change to .. update particles of all players
+
+
             });
 
             // on left mouse, set targeted block to be air
@@ -162,6 +173,9 @@
             // Add Player movement animation
             document.onkeyup = function(e) {
             	if (['87', '65', '83', '68', '37', '38', '39', '40'].indexOf(e.keyCode.toString()) > -1) {
+                    // console.log('player.areyawalkinnnnnn:', player.areyawalkinnnnnn())
+                    // let walkin = player.__proto__.areyawalkinnnnnn()
+                    // console.log('walkin:', walkin)
             	    if (player.is_walking()) {
             	        player.stop_walking();
             	    }
@@ -200,9 +214,6 @@
             	noa.rendering.zoomDistance = zoom
             })
 
-            var userId = this.$store.state.user
-                ? this.$store.state.user.id
-                : null
             var locationSendInterval = 1000 // Send location updates every X milliseconds
 
             // Set up the UI
@@ -213,12 +224,20 @@
             scene.onBeforeRenderObservable.add(()=>{
                 var users = this.getUsers()
 
-                // Move username tags to current position of each user cone
+                // Make any changes per user
                 users.forEach(user => {
+                    // Update callout position
                     if (user && user.tag && user.shape) {
-                        user.tag.moveToVector3(new BABYLON.Vector3(user.shape.position.x, 10.5, user.shape.position.z), scene)
+                        user.tag.moveToVector3(new BABYLON.Vector3(user.shape.position.x, 5.5, user.shape.position.z), scene)
+                    }
+
+                    // Update particle animation
+                    if (user && user.player) {                        
+                        user.player.update_particles()
                     }
                 })
+
+                var users = this.getUsers()
             })
 
             // Function to broadcast user location
@@ -243,12 +262,31 @@
             sendLocation()
 
             // Function to draw a new user cone with initial position
-            let makeShape = (x, z, user) => { // , that
-                let userShape = STEVE_MODEL.clone(STEVE_MODEL.name)
+            let makePlayer = (x, z, user) => { // , that
 
-                userShape._children.forEach(child => {
-                    child.isVisible = true
-                })
+                let new_player = new Player({
+                  	// Pass it a copy of the Babylon scene
+                	scene: scene,
+
+                	// Pass it the initial player color
+                	player_color: new BABYLON.Color4(0,0,255,0.8),
+
+                	// Pass it mesh height
+                	player_height: 1.5,
+
+                    name: user.name
+                });
+
+                let new_player_mesh = new_player.get_player_mesh()
+                new_player_mesh.scaling.x = 0.65;
+                new_player_mesh.scaling.y = 0.65;
+                new_player_mesh.scaling.z = 0.65;
+
+                let userShape = new_player_mesh
+
+                // userShape._children.forEach(child => {
+                //     child.isVisible = true
+                // })
 
                 userShape.position = new BABYLON.Vector3(0, 1, 0);
                 userShape.isVisible = true
@@ -268,6 +306,7 @@
 
                 user.shape = userShape
                 user.tag = rect1
+                user.player = new_player
 
                 this.setUser(user)
                 console.log('Added new shape to user:', user)
@@ -279,7 +318,7 @@
                 .joining(user => {
                     console.log('User joined:', user)
                     if (!this.$store.state.users[user.id]) {
-                        makeShape(0, 0, user)
+                        makePlayer(0, 0, user)
                     }
                 })
                 .leaving(user => {
@@ -334,7 +373,7 @@
 
                         rotationKeys.push({
                             frame: 30,
-                            value: ry - 90 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
+                            value: ry
                         })
 
                         positionInterpolate.setKeys(positionKeys);
@@ -347,7 +386,7 @@
 
                         this.setUser(user)
                     } else if (user) {
-                        makeShape(x, z, user)
+                        makePlayer(x, z, user)
                     } else {
                         console.log('WAT HAPPEN')
                     }
