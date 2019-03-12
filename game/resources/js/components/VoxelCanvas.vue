@@ -27,11 +27,9 @@
             noa.registry.registerMaterial('dirt', brownish, textureURL)
             noa.registry.registerMaterial('grass', greenish, textureURL)
 
-
             // register block types and their material name
             let dirtID = noa.registry.registerBlock(1, { material: 'dirt' })
             let grassID = noa.registry.registerBlock(2, { material: 'grass' })
-
 
             // add a listener for when the engine requests a new world chunk
             // `data` is an ndarray - see https://github.com/scijs/ndarray
@@ -94,12 +92,8 @@
             noa.inputs.down.on('fire', function () {
             	if (noa.targetedBlock) {
             		noa.setBlock(0, noa.targetedBlock.position);
-            	} else {
-            		// Random color whenever something not a block is clicked
-            		player.set_player_color(new BABYLON.Color4(Math.random(), Math.random(), Math.random(), 0.8));
             	}
             })
-
 
             // Add Player movement animation
             document.onkeyup = function(e) {
@@ -109,7 +103,6 @@
             	    }
             	}
             };
-
 
             document.onkeydown = function(e) {
                 if (['87', '65', '83', '68', '37', '38', '39', '40'].indexOf(e.keyCode.toString()) > -1) {
