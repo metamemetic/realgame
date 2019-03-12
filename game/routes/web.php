@@ -17,6 +17,12 @@ Route::get('/', function () {
     ]);
 });
 
+Route::get('/voxel', function () {
+    return view('voxel', [
+        'auth_user' => Auth::user()
+    ]);
+});
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');

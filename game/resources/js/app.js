@@ -78,6 +78,7 @@ let store = new Vuex.Store({
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 Vue.component('babylon-canvas', require('./components/BabylonCanvas.vue').default);
+Vue.component('voxel-canvas', require('./components/VoxelCanvas.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

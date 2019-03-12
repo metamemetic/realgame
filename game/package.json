@@ -26,6 +26,7 @@
     "dependencies": {
         "babylonjs-gui": "^3.3.0",
         "laravel-echo": "^1.5.3",
+        "noa-engine": "^0.22.0",
         "pusher-js": "^4.4.0",
         "vuex": "^3.1.0"
     }
