@@ -10,12 +10,14 @@ require('./bootstrap');
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import payments from './modules/payments'
 import players from './modules/players'
 
 Vue.use(Vuex)
 
 let store = new Vuex.Store({
     modules: {
+        payments,
         players
     },
 
