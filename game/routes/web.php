@@ -29,3 +29,4 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/opennode', 'OpenNodeController@demo_charge');
 Route::get('/opennode/info', 'OpenNodeController@charge_info');
+Route::get('/opennode/paid', 'OpenNodeController@find_all_paid');

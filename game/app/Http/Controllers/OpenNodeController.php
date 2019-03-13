@@ -38,7 +38,7 @@ class OpenNodeController extends Controller
             echo '<br /><br />';
             echo 'BTC address: ' . $charge->chain_invoice['address'];
             echo '<br /><br />';
-            print_r($charge);
+            dd($charge);
         } catch (Exception $e) {
             echo $e->getMessage(); // InvalidRequest Error creating order
         }
@@ -53,11 +53,32 @@ class OpenNodeController extends Controller
             $charge = \OpenNode\Merchant\Charge::find('43109de4-1d72-46ed-9415-6d3c46b18485');
 
             if ($charge) {
-                var_dump($charge);
+                dd($charge);
             }
             else {
                 echo 'Charge not found';
             }
+        } catch (Exception $e) {
+          echo $e->getMessage(); // Unauthorized Not authorized: invalid api key
+        }
+    }
+
+    /**
+     * Find all paid charges
+     */
+    public function find_all_paid()
+    {
+        try {
+          $charges = \OpenNode\Merchant\Charge::findAllPaid();
+
+          if (!$charges) {
+              echo "No paid charges";
+          }
+
+          foreach ($charges as $charge) {
+            print_r($charge);
+            echo "<br /><br />";
+          }
         } catch (Exception $e) {
           echo $e->getMessage(); // Unauthorized Not authorized: invalid api key
         }
