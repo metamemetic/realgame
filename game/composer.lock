@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "398b64dfd08158f165437e8dbcc0e492",
+    "content-hash": "00f7424b2b165b8ff7721282b9020c04",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -936,6 +936,56 @@
                 "php"
             ],
             "time": "2019-02-16T20:54:15+00:00"
+        },
+        {
+            "name": "opennode/opennode-php",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/opennodedev/opennode-php.git",
+                "reference": "66ef300ca58c2ba77d6bce8812fd27642613ce89"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/opennodedev/opennode-php/zipball/66ef300ca58c2ba77d6bce8812fd27642613ce89",
+                "reference": "66ef300ca58c2ba77d6bce8812fd27642613ce89",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=5.6.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~5.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "OpenNode\\": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "João Almeida",
+                    "email": "joao@opennode.co"
+                }
+            ],
+            "description": "OpenNode PHP library for API v1",
+            "homepage": "https://opennode.co",
+            "keywords": [
+                "Lightning",
+                "bitcoin",
+                "cryptocurrency",
+                "gateway",
+                "payment",
+                "processor"
+            ],
+            "time": "2018-10-23T14:42:03+00:00"
         },
         {
             "name": "opis/closure",
