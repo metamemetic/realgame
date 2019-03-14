@@ -24,7 +24,9 @@
     </head>
     <body>
         <div id="app" class="full-height">
+            <inventory-bar></inventory-bar>
             <voxel-canvas></voxel-canvas>
+
         </div>
         <script>window.auth_user = {!! json_encode($auth_user); !!};</script>
         <script src="{{ mix('js/app.js') }}"></script>
