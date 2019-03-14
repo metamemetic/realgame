@@ -1,6 +1,6 @@
 <template>
     <div class="inventory-container">
-        <h4>Inventory Bar</h4>
+        <img src="/img/inventory-bar.png" class="inventory-bar-image" />
     </div>
 </template>
 
@@ -10,9 +10,14 @@
         text-align: center;
         color: white;
         width: 100%;
-        bottom: 20px;
+        bottom: 30px;
         left: 0;
         right: 0;
         z-index: 10;
+    }
+
+    .inventory-bar-image {
+        image-rendering: pixelated;
+        width: 800px;
     }
 </style>
