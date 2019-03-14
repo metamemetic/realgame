@@ -85,6 +85,7 @@ let store = new Vuex.Store({
 
 Vue.component('babylon-canvas', require('./components/BabylonCanvas.vue').default);
 Vue.component('inventory-bar', require('./components/InventoryBar.vue').default);
+Vue.component('token-widget', require('./components/TokenWidget.vue').default);
 Vue.component('voxel-canvas', require('./components/VoxelCanvas.vue').default);
 
 /**

@@ -19,5 +19,6 @@
     .inventory-bar-image {
         image-rendering: pixelated;
         width: 800px;
+        max-width: 90%;
     }
 </style>
