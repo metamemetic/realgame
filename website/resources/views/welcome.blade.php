@@ -105,7 +105,7 @@
                 <div class="subtitle">
                     Introducing the <strong>realgame</strong><br />of peer-to-peer everything.
                 </div>
-                <a href="https://forum.arcade.city/t/pivoting-upward/37" target="_blank">
+                <a href="https://forum.arcade.city/t/pivoting-upward/37">
                     <button class="myButton" style="margin-top: 45px; ">
                         Read the Announcement
                     </button>
