@@ -61,6 +61,30 @@
             .m-b-md {
                 margin-bottom: 30px;
             }
+
+            .myButton {
+            	background-color:#00d0c1;
+            	-moz-border-radius:28px;
+            	-webkit-border-radius:28px;
+            	border-radius:28px;
+            	border:1px solid #18ab29;
+            	display:inline-block;
+                font-family: 'Ubuntu Mono', monospace;
+            	cursor:pointer;
+            	color:#ffffff;
+            	font-size:17px;
+            	padding:16px 31px;
+            	text-decoration:none;
+            	text-shadow:0px 1px 0px #2f6627;
+                outline: none;
+            }
+            .myButton:hover {
+            	background-color:#5cbf2a;
+            }
+            .myButton:active {
+            	position:relative;
+            	top:1px;
+            }
         </style>
     </head>
     <body>
@@ -81,6 +105,12 @@
                 <div class="subtitle">
                     Introducing the <strong>realgame</strong><br />of peer-to-peer everything.
                 </div>
+                <a href="https://forum.arcade.city/t/pivoting-upward/37" target="_blank">
+                    <button class="myButton" style="margin-top: 45px; ">
+                        Read the Announcement
+                    </button>
+                </a>
+
             </div>
         </div>
         <script src="{{ mix('js/app.js') }}"></script>
