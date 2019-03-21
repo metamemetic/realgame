@@ -4,6 +4,14 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+
+        <meta property="og:url"                content="https://arcade.city" />
+        <meta property="og:type"               content="website" />
+        <meta property="og:title"              content="Arcade City" />
+        <meta property="og:description"        content="The realgame of peer-to-peer everything" />
+        <meta property="og:image"              content="https://arcade.city/images/1.jpg" />
+        <meta property="fb:app_id"             content="167607843598672" />
+
         <title>Arcade City</title>
         <link rel="stylesheet" type="text/css" href="css/demo.css" />
         <link rel="stylesheet" type="text/css" href="css/style4.css" />
