@@ -25,7 +25,7 @@
     <body>
         <div id="app" class="full-height">
             <inventory-bar></inventory-bar>
-            <voxel-canvas></voxel-canvas>
+            <babylon-canvas></babylon-canvas>
             <token-widget></token-widget>
         </div>
         <script>window.auth_user = {!! json_encode($auth_user); !!};</script>

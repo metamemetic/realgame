@@ -7,6 +7,7 @@
     import * as BABYLON from 'babylonjs';
     import 'babylonjs-materials';
     import 'babylonjs-gui';
+    import 'babylonjs-loaders';
 
     export default {
         // props: ['me'],
@@ -42,11 +43,14 @@
             // Create the scene space
             var scene = new BABYLON.Scene(engine);
             var assetsManager = new BABYLON.AssetsManager(scene);
-            assetsManager.useDefaultLoadingScreen = false;
+            assetsManager.useDefaultLoadingScreen = true;
             var meshTask = assetsManager.addMeshTask("steve", "", "/models/", "steve.babylon");
 
             var STEVE_MODEL = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
             STEVE_MODEL.visibility = 0
+
+            var BUILDING_MODEL = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
+            BUILDING_MODEL.visibility = 0
 
             meshTask.onSuccess = function (task) {
                 console.log(task)
@@ -61,10 +65,44 @@
                 console.log(message, exception);
             }
 
+            var meshTask2 = assetsManager.addMeshTask("tester", "", "/models/", "tester.obj");
+
+            meshTask2.onSuccess = function (task) {
+                console.log(task)
+                console.log('Loaded Test1?!')
+
+
+                var meshes = task.loadedMeshes
+                meshes.forEach(mesh => {
+                    mesh.parent = BUILDING_MODEL
+                    // mesh.isVisible = false
+                })
+
+                // var building = task.loadedMeshes[0]
+                // console.log('Current building position:', building.position.x, building.position.y, building.position.z)
+                // building.position.x = 50
+                // building.position.y = 50
+                // building.position.z = 50
+                // console.log('Current building position:', building.position.x, building.position.y, building.position.z)
+
+
+                BUILDING_MODEL.position.x = 100
+                BUILDING_MODEL.position.y = 0
+                BUILDING_MODEL.position.z = 100
+            }
+
             assetsManager.load()
 
             // Add a camera to the scene and attach it to the canvas
             var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 6, 0), scene);
+            // var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+            camera.attachControl(canvas, true);
+
+            camera.keysUp.push(87); // "w"
+            camera.keysDown.push(83); // "s"
+            camera.keysLeft.push(65);
+            camera.keysRight.push(68);
+
             // camera.setTarget(new BABYLON.Vector3(0, 1.5, -100));
 
             // Make the ground
@@ -90,7 +128,7 @@
         	shape.position = new BABYLON.Vector3(0, 1, 0);
             shape.rotation.y = Math.PI // Math.PI * 2
             shape.visibility = 0
-            camera.parent = shape;
+            // camera.parent = shape;
 
             // Run the render loop
             engine.runRenderLoop(function () {
