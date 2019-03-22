@@ -7,6 +7,7 @@
     import * as BABYLON from 'babylonjs';
     import 'babylonjs-materials';
     import 'babylonjs-gui';
+    import 'babylonjs-loaders';
 
     export default {
         computed: {
@@ -51,6 +52,20 @@
             // Temporarily use Steve mesh for other players
             var meshTask = assetsManager.addMeshTask("steve", "", "/models/", "steve.babylon");
 
+            // var meshTask2 = assetsManager.addMeshTask("Test1", "", "/models/", "Test1.obj");
+            var meshTask2 = assetsManager.addMeshTask("tester", "", "/models/", "tester.obj");
+
+            meshTask2.onSuccess = function (task) {
+                console.log(task)
+                console.log('Loaded Test1?!')
+                var building = task.loadedMeshes[0]
+                console.log('Current building position:', building.position.x, building.position.y, building.position.z)
+                building.position.x = 50
+                building.position.y = 50
+                building.position.z = 50
+                console.log('Current building position:', building.position.x, building.position.y, building.position.z)
+            }
+
             var STEVE_MODEL = BABYLON.Mesh.CreateCylinder("cone", 3, 3, 0, 6, 1, scene, false);
             STEVE_MODEL.visibility = 0
 
@@ -70,8 +85,8 @@
             assetsManager.load()
 
             // Make the ground
-            var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, scene);
-            ground.material = new BABYLON.GridMaterial("groundMaterial", scene);
+            // var ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 1000, height: 1000}, scene);
+            // ground.material = new BABYLON.GridMaterial("groundMaterial", scene);
 
             // Add a hemispheric light
             var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
@@ -100,24 +115,39 @@
 
             // add a listener for when the engine requests a new world chunk
             // `data` is an ndarray - see https://github.com/scijs/ndarray
-            noa.world.on('worldDataNeeded', function (id, data, x, y, z) {
-                // console.log(id + ' - data ndarray right now is:', data)
-            	// populate ndarray with world data (block IDs or 0 for air)
-            	for (let i = 0; i < data.shape[0]; ++i) {
-            		for (let k = 0; k < data.shape[2]; ++k) {
-            			let height = getHeightMap(x + i, z + k)
-            			for (let j = 0; j < data.shape[1]; ++j) {
-            				if (y + j < height) {
-            					if (y + j >= 0) {
-                                    data.set(i, j, k, grassID);
-                                }
-            				}
-            			}
-            		}
-            	}
-            	// pass the finished data back to the game engine
-            	noa.world.setChunkData(id, data)
-            })
+
+            // noa.world.on('worldDataNeeded', function (id, data, x, y, z) {
+            //     // console.log(id + ' - data ndarray right now is:', data)
+            // 	// populate ndarray with world data (block IDs or 0 for air)
+            // 	for (let i = 0; i < data.shape[0]; ++i) {
+            // 		for (let k = 0; k < data.shape[2]; ++k) {
+            //             data.set(i, -5, k, grassID);
+            //             console.log(i, k)
+            // 		}
+            // 	}
+            // 	// pass the finished data back to the game engine
+            // 	noa.world.setChunkData(id, data)
+            // })
+
+
+            // noa.world.on('worldDataNeeded', function (id, data, x, y, z) {
+            //     // console.log(id + ' - data ndarray right now is:', data)
+            // 	// populate ndarray with world data (block IDs or 0 for air)
+            // 	for (let i = 0; i < data.shape[0]; ++i) {
+            // 		for (let k = 0; k < data.shape[2]; ++k) {
+            // 			let height = getHeightMap(x + i, z + k)
+            // 			for (let j = 0; j < data.shape[1]; ++j) {
+            // 				if (y + j < height) {
+            // 					if (y + j >= 0) {
+            //                         data.set(i, j, k, grassID);
+            //                     }
+            // 				}
+            // 			}
+            // 		}
+            // 	}
+            // 	// pass the finished data back to the game engine
+            // 	noa.world.setChunkData(id, data)
+            // })
 
             // worldgen - return a heightmap for a given [x,z]
             function getHeightMap(x, z) {
@@ -232,7 +262,7 @@
                     }
 
                     // Update particle animation
-                    if (user && user.player) {                        
+                    if (user && user.player) {
                         user.player.update_particles()
                     }
                 })
