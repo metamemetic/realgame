@@ -79,6 +79,7 @@ export default {
             axios.get(url)
                  .then(res => {
                      console.log(res)
+                     console.log(res.data.USD)
                  })
         },
 
