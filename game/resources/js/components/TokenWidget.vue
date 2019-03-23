@@ -37,7 +37,7 @@ export default {
             const tokenAddress = '0xb581e3a7db80fbaa821ab39342e9cbfd2ce33c23'
             const tokenSymbol = 'ARCD'
             const decimals = 18
-            const tokenImage = 'http://placekitten.com/200/300'
+            const tokenImage = 'https://arcade.city/favicon.png'
 
             ethereum.sendAsync({
                 method: 'wallet_watchAsset',
