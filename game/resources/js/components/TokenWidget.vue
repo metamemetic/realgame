@@ -32,6 +32,7 @@ export default {
 
     data: function() {
         return {
+            account: null,
             network: 'none',
             arcdBalance: '?',
             ethBalance: '?'
@@ -61,10 +62,12 @@ export default {
             const account = accounts[0]
             console.log(account)
             // this.addARCDtoMetamask()
+            this.account = account
             this.queryVendorContract()
             this.checkEthBalance()
             this.checkArcdBalance()
             this.getETHprice()
+            this.changeExchangeRate()
             // this.clickBuyArcd(0.2)
         } else {
             console.log('Not using MetaMask')
@@ -72,6 +75,36 @@ export default {
     },
 
     methods: {
+        // Change token exchange rate
+        changeExchangeRate(rate = 40000) {
+            var vendorAddr = '0x9592A1D9118710C41A0E19280F852f6e321Fb1c7'; // mainnet
+            var vendorABI = [
+                {
+            		"constant": false,
+            		"inputs": [
+            			{
+            				"name": "newTokenExchangeRate",
+            				"type": "uint256"
+            			}
+            		],
+            		"name": "setExchangeRate",
+            		"outputs": [],
+            		"payable": false,
+            		"stateMutability": "nonpayable",
+            		"type": "function"
+            	},
+                {"constant":true,"inputs":[],"name":"minBuyTokens","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"tokenExchangeRate","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"buyPrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"ARCD_TOKEN_ADDRESS","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"payable":true,"stateMutability":"payable","type":"fallback"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_sender","type":"address"},{"indexed":true,"name":"_value","type":"uint256"},{"indexed":true,"name":"_rate","type":"uint256"},{"indexed":false,"name":"_tokens","type":"uint256"}],"name":"Purchase","type":"event"}
+            ]
+            var vendorInst = web3.eth.contract(vendorABI).at(vendorAddr);
+
+            vendorInst.setExchangeRate(rate, function(err, result) {
+                if (result) {
+                    console.log(result)
+                } else {
+                    console.log(err)
+                }
+            })
+        },
 
         // Get the current ETH price in USD
         getETHprice() {
@@ -80,6 +113,7 @@ export default {
                  .then(res => {
                      console.log(res)
                      console.log(res.data.USD)
+                     const ethPriceUsd = res.data.USD
                  })
         },
 
