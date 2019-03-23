@@ -53,7 +53,7 @@
             BUILDING_MODEL.visibility = 0
 
             meshTask.onSuccess = function (task) {
-                console.log(task)
+                // console.log(task)
                 var meshes = task.loadedMeshes
                 meshes.forEach(mesh => {
                     mesh.parent = STEVE_MODEL
@@ -68,8 +68,8 @@
             var meshTask2 = assetsManager.addMeshTask("tester", "", "/models/", "tester.obj");
 
             meshTask2.onSuccess = function (task) {
-                console.log(task)
-                console.log('Loaded Test1?!')
+                // console.log(task)
+                // console.log('Loaded Test1?!')
 
 
                 var meshes = task.loadedMeshes
@@ -207,7 +207,7 @@
             }
 
             // Start the sendLocation loop
-            sendLocation()
+            // sendLocation()
 
             // Function to draw a new user cone with initial position
             let makeShape = (x, z, user) => { // , that
@@ -241,84 +241,84 @@
             }
 
             // Listen for user locations and update user store with user object accordingly
-            Echo.private('locations')
-                .listenForWhisper('location', (e) => {
-                    const { ry, x, z, userId } = e
-
-                    let userGetter = this.getUserById(userId)
-                    const user = userGetter(userId)
-
-                    if (user && user.shape) {
-                        user.shape.animations = [];
-                        user.id = userId
-
-                        var positionInterpolate = new BABYLON.Animation("positionInterpolate", "position", 30,
-                            BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
-                            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-                        );
-
-                        var rotationInterpolate = new BABYLON.Animation("positionInterpolate", "rotation.y", 30,
-                            BABYLON.Animation.ANIMATIONTYPE_FLOAT,
-                            BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
-                        );
-
-                        var positionKeys = [];
-
-                        positionKeys.push({
-                          frame: 0,
-                          value: user.shape.position,
-                        });
-
-                        positionKeys.push({
-                          frame: 30,
-                          value: new BABYLON.Vector3(
-                              x,
-                              user.shape.position.y,
-                              z
-                          ),
-                        });
-
-                        var rotationKeys = []
-
-                        rotationKeys.push({
-                            frame: 0,
-                            value: user.shape.rotation.y
-                        })
-
-                        rotationKeys.push({
-                            frame: 30,
-                            value: ry - 90 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
-                        })
-
-                        positionInterpolate.setKeys(positionKeys);
-                        rotationInterpolate.setKeys(rotationKeys);
-
-                        user.shape.animations.push(positionInterpolate);
-                        user.shape.animations.push(rotationInterpolate);
-
-                        scene.beginAnimation(user.shape, 0, 30, false);
-
-                        this.setUser(user)
-                    } else if (user) {
-                        makeShape(x, z, user)
-                    } else {
-                        console.log('WAT HAPPEN')
-                    }
-                });
+            // Echo.private('locations')
+            //     .listenForWhisper('location', (e) => {
+            //         const { ry, x, z, userId } = e
+            //
+            //         let userGetter = this.getUserById(userId)
+            //         const user = userGetter(userId)
+            //
+            //         if (user && user.shape) {
+            //             user.shape.animations = [];
+            //             user.id = userId
+            //
+            //             var positionInterpolate = new BABYLON.Animation("positionInterpolate", "position", 30,
+            //                 BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+            //                 BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+            //             );
+            //
+            //             var rotationInterpolate = new BABYLON.Animation("positionInterpolate", "rotation.y", 30,
+            //                 BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+            //                 BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+            //             );
+            //
+            //             var positionKeys = [];
+            //
+            //             positionKeys.push({
+            //               frame: 0,
+            //               value: user.shape.position,
+            //             });
+            //
+            //             positionKeys.push({
+            //               frame: 30,
+            //               value: new BABYLON.Vector3(
+            //                   x,
+            //                   user.shape.position.y,
+            //                   z
+            //               ),
+            //             });
+            //
+            //             var rotationKeys = []
+            //
+            //             rotationKeys.push({
+            //                 frame: 0,
+            //                 value: user.shape.rotation.y
+            //             })
+            //
+            //             rotationKeys.push({
+            //                 frame: 30,
+            //                 value: ry - 90 * Math.PI / 180 // received rotatin plus 270deg rotation to handle the model starting rotated(?)
+            //             })
+            //
+            //             positionInterpolate.setKeys(positionKeys);
+            //             rotationInterpolate.setKeys(rotationKeys);
+            //
+            //             user.shape.animations.push(positionInterpolate);
+            //             user.shape.animations.push(rotationInterpolate);
+            //
+            //             scene.beginAnimation(user.shape, 0, 30, false);
+            //
+            //             this.setUser(user)
+            //         } else if (user) {
+            //             makeShape(x, z, user)
+            //         } else {
+            //             console.log('WAT HAPPEN')
+            //         }
+            //     });
 
             // Join the presence channel and handle others joining/leaving
-            Echo.join('online')
-                .here(users => this.setUsers(users))
-                .joining(user => {
-                    console.log('User joined:', user)
-                    if (!this.$store.state.users[user.id]) {
-                        makeShape(0, 0, user)
-                    }
-                })
-                .leaving(user => {
-                    console.log('User left:', user)
-                    this.removeUserById(user.id)
-                })
+            // Echo.join('online')
+            //     .here(users => this.setUsers(users))
+            //     .joining(user => {
+            //         console.log('User joined:', user)
+            //         if (!this.$store.state.users[user.id]) {
+            //             makeShape(0, 0, user)
+            //         }
+            //     })
+            //     .leaving(user => {
+            //         console.log('User left:', user)
+            //         this.removeUserById(user.id)
+            //     })
         }
     }
 </script>
