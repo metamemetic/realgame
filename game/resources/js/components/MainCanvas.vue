@@ -32,17 +32,21 @@
             let textureURL = null // replace that to use a texture
             let brownish = [0.45, 0.36, 0.22]
             let greenish = [0.1, 0.8, 0.2]
+            let black = [0, 0, 0]
+            let white = [1, 1, 1]
             noa.registry.registerMaterial('dirt', brownish, textureURL)
             noa.registry.registerMaterial('grass', greenish, textureURL)
+            noa.registry.registerMaterial('white', white, textureURL)
 
             // register block types and their material name
             let dirtID = noa.registry.registerBlock(1, { material: 'dirt' })
             let grassID = noa.registry.registerBlock(2, { material: 'grass' })
+            let whiteID = noa.registry.registerBlock(3, { material: 'white' })
 
             // add a listener for when the engine requests a new world chunk
             // `data` is an ndarray - see https://github.com/scijs/ndarray
             noa.world.on('worldDataNeeded', function (id, data, x, y, z) {
-                // console.log('id ' + id + ', data ', data, x, y, z)
+                console.log('id ' + id + ', data ', data, x, y, z)
             	// populate ndarray with world data (block IDs or 0 for air)
             	for (let i = 0; i < data.shape[0]; ++i) {
             		for (let k = 0; k < data.shape[2]; ++k) {
@@ -50,7 +54,7 @@
             			for (let j = 0; j < data.shape[1]; ++j) {
             				if (y + j < height) {
             					if (y + j < 0) data.set(i, j, k, dirtID)
-            					else data.set(i, j, k, grassID);
+            					else data.set(i, j, k, whiteID);
             				}
             			}
             		}
@@ -58,6 +62,24 @@
             	// pass the finished data back to the game engine
             	noa.world.setChunkData(id, data)
             })
+
+
+            setTimeout(() => {
+
+                this.renderBuilding()
+
+                // for (let x=0; x < 100; x++) {
+                //     noa.world.setBlockID(dirtID, 4, x, 15)
+                //     console.log('did that work', x)
+                // }
+                // noa.addBlock(dirtID, 0, 0, 15)
+                // noa.addBlock(dirtID, 3, 3, 3)
+                // noa.addBlock(dirtID, 20, 20, 20)
+                // noa.addBlock(grassID, 22, 22, 22)
+            }, 1000)
+
+
+
 
             // worldgen - return a heightmap for a given [x,z]
             function getHeightMap(x, z) {
@@ -145,6 +167,15 @@
             	noa.rendering.zoomDistance = zoom
             })
 
+        },
+
+        methods: {
+            renderBuilding() {
+                for (let x=0; x < 100; x++) {
+                    noa.world.setBlockID(1, 4, x, 15)
+                    console.log('did that work', x)
+                }
+            }
         }
     }
 </script>
