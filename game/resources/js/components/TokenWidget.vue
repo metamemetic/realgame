@@ -1,7 +1,8 @@
 <template>
     <div class="token-widget-container">
-        <span id="numTokens">0</span> Tokens<br />
-        Network: <span id="network">{{ network }}</span>
+        ARCD: {{ arcdBalance }}<br />
+        ETH: {{ ethBalance }}<br />
+        Network: {{ network }}
     </div>
 </template>
 
@@ -31,7 +32,9 @@ export default {
 
     data: function() {
         return {
-            network: 'none'
+            network: 'none',
+            arcdBalance: '?',
+            ethBalance: '?'
         }
     },
 
@@ -110,8 +113,9 @@ export default {
         // Get user's ETH balance
         checkEthBalance () {
             web3.eth.getBalance(web3.eth.accounts[0], (err, balance) => {
-                console.log('ETH balance:', balance.c[0] / 10000)
-                // this.setState({ ethBalance: balance.c[0] / 10000 })
+                const ethBalance = balance.c[0] / 10000
+                this.ethBalance = ethBalance
+                console.log('ETH balance:', ethBalance)
             })
         },
 
@@ -136,10 +140,11 @@ export default {
           var tokenInst = web3.eth.contract(tokenABI).at(tokenAddress);
           var myArcdBalanceCallback = (function(err, result) {
             if (result) {
-              console.log("ARCD balance: ", result.c[0] / 10000)
-              // this.setState({ arcdBalance: result.c[0] / 10000 })
+                const arcdBalance = result.c[0] / 10000
+                this.arcdBalance = arcdBalance
+                console.log("ARCD balance: ", arcdBalance)
             } else {
-              console.log("err: ", err)
+                console.log("err: ", err)
             }
           }).bind(this)
 
