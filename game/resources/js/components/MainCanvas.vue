@@ -46,23 +46,22 @@
             // add a listener for when the engine requests a new world chunk
             // `data` is an ndarray - see https://github.com/scijs/ndarray
             noa.world.on('worldDataNeeded', function (id, data, x, y, z) {
-                console.log('id ' + id + ', data ', data, x, y, z)
+                // console.log('id ' + id + ', data ', data, x, y, z)
             	// populate ndarray with world data (block IDs or 0 for air)
-            	for (let i = 0; i < data.shape[0]; ++i) {
-            		for (let k = 0; k < data.shape[2]; ++k) {
-            			let height = getHeightMap(x + i, z + k)
-            			for (let j = 0; j < data.shape[1]; ++j) {
-            				if (y + j < height) {
-            					if (y + j < 0) data.set(i, j, k, dirtID)
-            					else data.set(i, j, k, whiteID);
-            				}
-            			}
-            		}
-            	}
+            	// for (let i = 0; i < data.shape[0]; ++i) {
+            	// 	for (let k = 0; k < data.shape[2]; ++k) {
+            	// 		let height = getHeightMap(x + i, z + k)
+            	// 		for (let j = 0; j < data.shape[1]; ++j) {
+            	// 			if (y + j < height) {
+            	// 				if (y + j < 0) data.set(i, j, k, dirtID)
+            	// 				else data.set(i, j, k, whiteID);
+            	// 			}
+            	// 		}
+            	// 	}
+            	// }
             	// pass the finished data back to the game engine
             	noa.world.setChunkData(id, data)
             })
-
 
             setTimeout(() => {
 
@@ -171,9 +170,14 @@
 
         methods: {
             renderBuilding() {
-                for (let x=0; x < 100; x++) {
-                    noa.world.setBlockID(1, 4, x, 15)
-                    console.log('did that work', x)
+                let platformWidth = 6
+                let platformLength = 6
+
+                // Starting platform
+                for (let x = -platformWidth * 0.5; x < platformWidth * 0.5; x++) {
+                    for (let z = -platformLength * 0.5; z < platformLength * 0.5; z++) {
+                        noa.world.setBlockID(3, x, -3, z)
+                    }
                 }
             }
         }
