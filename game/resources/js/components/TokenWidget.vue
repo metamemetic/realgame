@@ -64,6 +64,7 @@ export default {
             this.queryVendorContract()
             this.checkEthBalance()
             this.checkArcdBalance()
+            this.getETHprice()
             // this.clickBuyArcd(0.2)
         } else {
             console.log('Not using MetaMask')
@@ -72,6 +73,16 @@ export default {
 
     methods: {
 
+        // Get the current ETH price in USD
+        getETHprice() {
+            let url = 'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=f3a8bdf14c66fc65780176d4d7b8d92e5b423fdeb9861f747c9bf469751e7374'
+            axios.get(url)
+                 .then(res => {
+                     console.log(res)
+                 })
+        },
+
+        // Generate buy transaction
         clickBuyArcd(ethToSend = 0.1, network = "mainnet") {
             // let ethToSend = this.state.ethToSend
             // let network = this.state.network
