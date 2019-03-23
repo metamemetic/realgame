@@ -1,7 +1,7 @@
 <template>
     <div class="token-widget-container">
         <span id="numTokens">0</span> Tokens<br />
-        Network: <span id="network">none</span>
+        Network: <span id="network">{{ network }}</span>
     </div>
 </template>
 
@@ -28,9 +28,32 @@
 <script>
 
 export default {
+
+    data: function() {
+        return {
+            network: 'none'
+        }
+    },
+
     async mounted() {
         if (typeof window.ethereum !== 'undefined') {
             console.log('window.ethereum:', window.ethereum)
+
+            switch (window.ethereum.networkVersion) {
+                case '1':
+                    this.network = 'mainnet'
+                    break
+                case '2':
+                    this.network = 'morden (DEPRECATED)'
+                    break
+                case '3':
+                    this.network = 'ropsten'
+                    break
+                default:
+                    this.network = 'unknown'
+                    break
+            }
+
             const accounts = await ethereum.enable()
             const account = accounts[0]
             console.log(account)
