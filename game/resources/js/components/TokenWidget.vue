@@ -1,13 +1,14 @@
 <template>
     <div class="token-widget-container">
-        0 Tokens
+        <span id="numTokens">0</span> Tokens<br />
+        Network: <span id="network">none</span>
     </div>
 </template>
 
 <style>
     .token-widget-container {
         position: fixed;
-        text-align: center;
+        text-align: right;
         color: white;
         width: 200px;
         top: 25px;
@@ -37,12 +38,51 @@ export default {
             this.queryVendorContract()
             this.checkEthBalance()
             this.checkArcdBalance()
+            // this.clickBuyArcd(0.2)
         } else {
             console.log('Not using MetaMask')
         }
     },
 
     methods: {
+
+        clickBuyArcd(ethToSend = 0.1, network = "mainnet") {
+            // let ethToSend = this.state.ethToSend
+            // let network = this.state.network
+
+            switch (network) {
+                case "ropsten":
+                    var vendorAddr = '0xd1BEDd362b60d2Ed38C0820b3f97E64D47795DeA'; // ropsten
+                    break;
+                case "mainnet":
+                    var vendorAddr = '0x9592A1D9118710C41A0E19280F852f6e321Fb1c7'; // mainnet
+                    break;
+                default:
+                    var vendorAddr = null
+                    break;
+            }
+
+            var sendTransactionCallback = (function(err, result) {
+                if (result) {
+                    console.log('ok')
+                    console.log(result)
+                    // this.setState({
+                    //     ethSent: true,
+                    //     txId: result
+                    // })
+                } else {
+                    console.log(err.message)
+                }
+            }).bind(this)
+
+            web3.eth.sendTransaction({
+                from: web3.eth.accounts[0],
+                to: vendorAddr,
+                value: ethToSend * 1000000000000000000,
+                gas: 200000
+            }, sendTransactionCallback)
+
+        },
 
         // Get user's ETH balance
         checkEthBalance () {
