@@ -87,6 +87,7 @@ Vue.component('babylon-canvas', require('./components/BabylonCanvas.vue').defaul
 Vue.component('inventory-bar', require('./components/InventoryBar.vue').default);
 Vue.component('token-widget', require('./components/TokenWidget.vue').default);
 Vue.component('voxel-canvas', require('./components/VoxelCanvas.vue').default);
+Vue.component('main-canvas', require('./components/MainCanvas.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

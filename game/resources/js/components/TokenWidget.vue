@@ -67,7 +67,6 @@ export default {
             this.checkEthBalance()
             this.checkArcdBalance()
             this.getETHprice()
-            this.changeExchangeRate()
             // this.clickBuyArcd(0.2)
         } else {
             console.log('Not using MetaMask')
