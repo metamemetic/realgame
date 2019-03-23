@@ -23,3 +23,16 @@
         max-width: 90%;
     } */
 </style>
+
+<script>
+
+export default {
+    mounted() {
+        if (typeof window.ethereum !== 'undefined') {
+            console.log('window.ethereum:', window.ethereum)
+        } else {
+            console.log('Not using MetaMask')
+        }
+    }
+}
+</script>
