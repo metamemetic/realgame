@@ -33,6 +33,35 @@ export default {
             const accounts = await ethereum.enable()
             const account = accounts[0]
             console.log(account)
+
+            const tokenAddress = '0xb581e3a7db80fbaa821ab39342e9cbfd2ce33c23'
+            const tokenSymbol = 'ARCD'
+            const decimals = 18
+            const tokenImage = 'http://placekitten.com/200/300'
+
+            ethereum.sendAsync({
+                method: 'wallet_watchAsset',
+                params: {
+                  "type":"ERC20",
+                  "options":{
+                    "address": tokenAddress,
+                    "symbol": tokenSymbol,
+                    "decimals": decimals,
+                    "image": tokenImage,
+                  },
+                },
+                id: Math.round(Math.random() * 100000),
+            }, (err, added) => {
+
+              if (added) {
+                console.log('Thanks for your interest!')
+              } else {
+                console.log('Your loss!')
+              }
+
+            })
+
+
         } else {
             console.log('Not using MetaMask')
         }
