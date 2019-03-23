@@ -27,9 +27,12 @@
 <script>
 
 export default {
-    mounted() {
+    async mounted() {
         if (typeof window.ethereum !== 'undefined') {
             console.log('window.ethereum:', window.ethereum)
+            const accounts = await ethereum.enable()
+            const account = accounts[0]
+            console.log(account)
         } else {
             console.log('Not using MetaMask')
         }
