@@ -66,7 +66,7 @@
             setTimeout(() => {
 
                 this.renderBuilding()
-                this.loadModel()
+                this.loadModel('tibetan-temple')
 
                 // for (let x=0; x < 100; x++) {
                 //     noa.world.setBlockID(dirtID, 4, x, 15)
@@ -172,7 +172,6 @@
             loadModel(model = 'pyramid') {
                 this.loadJSON('/models/' + model + '.json',
                          function(data) {
-                             console.log("DATA:", data);
 
                              data.forEach(block => {
                                  // console.log(block)
@@ -204,8 +203,8 @@
             },
 
             renderBuilding() {
-                let platformWidth = 6
-                let platformLength = 6
+                let platformWidth = 120
+                let platformLength = 120
 
                 // Starting platform
                 for (let x = -platformWidth * 0.5; x < platformWidth * 0.5; x++) {
