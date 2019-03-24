@@ -66,6 +66,7 @@
             setTimeout(() => {
 
                 this.renderBuilding()
+                this.loadModel()
 
                 // for (let x=0; x < 100; x++) {
                 //     noa.world.setBlockID(dirtID, 4, x, 15)
@@ -165,10 +166,43 @@
             	if (zoom > maxZoom) zoom = maxZoom
             	noa.rendering.zoomDistance = zoom
             })
-
         },
 
         methods: {
+            loadModel(model = 'pyramid') {
+                this.loadJSON('/models/' + model + '.json',
+                         function(data) {
+                             console.log("DATA:", data);
+
+                             data.forEach(block => {
+                                 // console.log(block)
+
+                                 noa.world.setBlockID(2, block.x, block.y - 15, block.z)
+                             })
+                         },
+                         function(xhr) { console.error(xhr); }
+                );
+            },
+
+            loadJSON(path, success, error)
+            {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function()
+                {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            if (success)
+                                success(JSON.parse(xhr.responseText));
+                        } else {
+                            if (error)
+                                error(xhr);
+                        }
+                    }
+                };
+                xhr.open("GET", path, true);
+                xhr.send();
+            },
+
             renderBuilding() {
                 let platformWidth = 6
                 let platformLength = 6
@@ -176,7 +210,7 @@
                 // Starting platform
                 for (let x = -platformWidth * 0.5; x < platformWidth * 0.5; x++) {
                     for (let z = -platformLength * 0.5; z < platformLength * 0.5; z++) {
-                        noa.world.setBlockID(3, x, -3, z)
+                        noa.world.setBlockID(3, x, -15, z)
                     }
                 }
             }
