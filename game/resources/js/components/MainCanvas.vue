@@ -32,6 +32,10 @@
 
             let scene = noa.rendering.getScene()  // Babylon's "Scene" object
 
+            BABYLON.ParticleHelper.CreateAsync("sun", scene).then((set) => {
+                set.start();
+            });
+
             // Add skybox and sky config - sky config - https://doc.babylonjs.com/extensions/sky
         	var skyboxMaterial = new BABYLON.SkyMaterial("skyMaterial", scene);
             skyboxMaterial.backFaceCulling = false;
@@ -79,12 +83,13 @@
 
                 this.renderBuilding()
 
+
                 // this.loadModel('scifi')
 
                 console.log(vox)
 
                 let parser = new vox.Parser()
-                parser.parse("models/chr_old.vox").then(function(voxelData) {
+                parser.parse("models/chr_knight.vox").then(function(voxelData) {
 
                     console.log(voxelData.voxels); // voxel position and color data
                     console.log(voxelData.size); // model size
@@ -105,22 +110,10 @@
 
                             noa.registry.registerMaterial('palette' + colorId, theColor, null)
                             noa.registry.registerBlock(colorId, { material: 'palette' + colorId })
-
                             colorId++
                         }
 
-
                     })
-
-                    // let white = [1, 1, 1]
-                    // noa.registry.registerMaterial('dirt', brownish, textureURL)
-                    // noa.registry.registerMaterial('grass', greenish, textureURL)
-                    // noa.registry.registerMaterial('white', white, textureURL)
-                    //
-                    // // register block types and their material name
-                    // let dirtID = noa.registry.registerBlock(1, { material: 'dirt' })
-                    // let grassID = noa.registry.registerBlock(2, { material: 'grass' })
-                    // let whiteID = noa.registry.registerBlock(3, { material: 'white' })
 
                     voxels.forEach(voxel => {
 
@@ -223,7 +216,7 @@
 
             // on right mouse, place some grass
             noa.inputs.down.on('alt-fire', function () {
-            	if (noa.targetedBlock) noa.addBlock(grassId, noa.targetedBlock.adjacent)
+            	if (noa.targetedBlock) noa.addBlock(1, noa.targetedBlock.adjacent)
             })
 
             // add a key binding for "E" to do the same as alt-fire
