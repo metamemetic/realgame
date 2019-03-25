@@ -46,14 +46,14 @@
             let greenish = [0.1, 0.8, 0.2]
             let black = [0, 0, 0]
             let white = [1, 1, 1]
-            noa.registry.registerMaterial('dirt', brownish, textureURL)
+            // noa.registry.registerMaterial('dirt', brownish, textureURL)
             noa.registry.registerMaterial('grass', greenish, textureURL)
-            noa.registry.registerMaterial('white', white, textureURL)
+            // noa.registry.registerMaterial('white', white, textureURL)
 
             // register block types and their material name
-            let dirtID = noa.registry.registerBlock(1, { material: 'dirt' })
-            let grassID = noa.registry.registerBlock(2, { material: 'grass' })
-            let whiteID = noa.registry.registerBlock(3, { material: 'white' })
+            // let dirtID = noa.registry.registerBlock(1, { material: 'dirt' })
+            let grassID = noa.registry.registerBlock(1, { material: 'grass' })
+            // let whiteID = noa.registry.registerBlock(3, { material: 'white' })
 
             // add a listener for when the engine requests a new world chunk
             // `data` is an ndarray - see https://github.com/scijs/ndarray
@@ -124,11 +124,13 @@
 
                     voxels.forEach(voxel => {
 
-                        noa.world.setBlockID(voxel.colorIndex, voxel.x, voxel.z - 14, voxel.y)
+                        noa.world.setBlockID(voxel.colorIndex + 1, voxel.x, voxel.z - 14, voxel.y)
 
                     })
 
                 });
+
+
 
                 // readFile('https://realgame.test/models/chr_old.vox', function(data) {
                 //     // let buffer = new Buffer(data)
@@ -149,6 +151,9 @@
                 // noa.addBlock(dirtID, 3, 3, 3)
                 // noa.addBlock(dirtID, 20, 20, 20)
                 // noa.addBlock(grassID, 22, 22, 22)
+
+
+
             }, 1000)
 
 
@@ -218,7 +223,7 @@
 
             // on right mouse, place some grass
             noa.inputs.down.on('alt-fire', function () {
-            	if (noa.targetedBlock) noa.addBlock(grassID, noa.targetedBlock.adjacent)
+            	if (noa.targetedBlock) noa.addBlock(grassId, noa.targetedBlock.adjacent)
             })
 
             // add a key binding for "E" to do the same as alt-fire
@@ -336,7 +341,7 @@
                 // Starting platform
                 for (let x = -platformWidth * 0.5; x < platformWidth * 0.5; x++) {
                     for (let z = -platformLength * 0.5; z < platformLength * 0.5; z++) {
-                        noa.world.setBlockID(3, x, -15, z)
+                        noa.world.setBlockID(1, x, -15, z)
                     }
                 }
             }
