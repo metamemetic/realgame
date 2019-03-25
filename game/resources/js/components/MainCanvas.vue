@@ -7,10 +7,15 @@
     import * as BABYLON from 'babylonjs';
     import 'babylonjs-materials';
     import 'babylonjs-gui';
+    // import * as fs from 'fs-web'
     // var nbt = require('nbt')
-    var nbt = require('prismarine-nbt')
+    // var nbt = require('prismarine-nbt')
 
-    // require('buffer')
+    var vox = require('vox.js')
+
+    // var parseMagicaVoxel = require('parse-magica-voxel');
+
+    require('buffer')
     // var Schematic = require('mc-schematic')('1.8')
 
     // var Schematic = require('minecraft-schematic');
@@ -74,10 +79,37 @@
 
                 this.renderBuilding()
 
+                // this.loadModel('scifi')
+
+                console.log(vox)
+
+                let parser = new vox.Parser()
+                parser.parse("models/chr_old.vox").then(function(voxelData) {
+
+                    console.log(voxelData.voxels); // voxel position and color data
+                    console.log(voxelData.size); // model size
+                    console.log(voxelData.palette); // palette data
+
+                    let voxels = voxelData.voxels
+
+                    voxels.forEach(voxel => {
+                        // console.log(block)
+
+                        noa.world.setBlockID(2, voxel.x, voxel.y - 15, voxel.z)
+                    })
+
+                });
+
+                // readFile('https://realgame.test/models/chr_old.vox', function(data) {
+                //     // let buffer = new Buffer(data)
+                //     // console.log(' test we got data', data)
+                //     // console.log(' test we got buffer', buffer)
+                //     console.log(JSON.stringify(parseMagicaVoxel(data)));
+                //
+                // })
+
+
                 // this.loadSchematic('tibetan-temple')
-
-
-                this.loadModel('scifi')
 
                 // for (let x=0; x < 100; x++) {
                 //     noa.world.setBlockID(dirtID, 4, x, 15)
@@ -229,7 +261,7 @@
                 );
             },
 
-            loadSchematicFile(path, success, error)
+            loadFile(path, success, error)
             {
                 var xhr = new XMLHttpRequest();
                 xhr.onreadystatechange = function()
