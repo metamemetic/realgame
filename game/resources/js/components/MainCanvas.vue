@@ -91,11 +91,41 @@
                     console.log(voxelData.palette); // palette data
 
                     let voxels = voxelData.voxels
+                    let palette = voxelData.palette
+
+
+                    let colorId = 1
+                    let theColor
+
+                    palette.forEach(color => {
+                        console.log(colorId, color)
+
+                        if (colorId < 256) {
+                            theColor = [color.r / 255, color.g / 255, color.b / 255, color.a / 255]
+
+                            noa.registry.registerMaterial('palette' + colorId, theColor, null)
+                            noa.registry.registerBlock(colorId, { material: 'palette' + colorId })
+
+                            colorId++
+                        }
+
+
+                    })
+
+                    // let white = [1, 1, 1]
+                    // noa.registry.registerMaterial('dirt', brownish, textureURL)
+                    // noa.registry.registerMaterial('grass', greenish, textureURL)
+                    // noa.registry.registerMaterial('white', white, textureURL)
+                    //
+                    // // register block types and their material name
+                    // let dirtID = noa.registry.registerBlock(1, { material: 'dirt' })
+                    // let grassID = noa.registry.registerBlock(2, { material: 'grass' })
+                    // let whiteID = noa.registry.registerBlock(3, { material: 'white' })
 
                     voxels.forEach(voxel => {
-                        // console.log(block)
 
-                        noa.world.setBlockID(2, voxel.x, voxel.z - 14, voxel.y)
+                        noa.world.setBlockID(voxel.colorIndex, voxel.x, voxel.z - 14, voxel.y)
+
                     })
 
                 });
