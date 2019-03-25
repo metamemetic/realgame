@@ -95,7 +95,7 @@
                     voxels.forEach(voxel => {
                         // console.log(block)
 
-                        noa.world.setBlockID(2, voxel.x, voxel.y - 15, voxel.z)
+                        noa.world.setBlockID(2, voxel.x, voxel.z - 14, voxel.y)
                     })
 
                 });
