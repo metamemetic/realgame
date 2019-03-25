@@ -7,6 +7,13 @@
     import * as BABYLON from 'babylonjs';
     import 'babylonjs-materials';
     import 'babylonjs-gui';
+    // var nbt = require('nbt')
+    var nbt = require('prismarine-nbt')
+
+    // require('buffer')
+    // var Schematic = require('mc-schematic')('1.8')
+
+    // var Schematic = require('minecraft-schematic');
 
     export default {
         mounted() {
@@ -66,7 +73,11 @@
             setTimeout(() => {
 
                 this.renderBuilding()
-                this.loadModel('tibetan-temple')
+
+                // this.loadSchematic('tibetan-temple')
+
+
+                this.loadModel('scifi')
 
                 // for (let x=0; x < 100; x++) {
                 //     noa.world.setBlockID(dirtID, 4, x, 15)
@@ -169,6 +180,41 @@
         },
 
         methods: {
+            loadSchematic(model = 'pyramid') {
+                this.loadSchematicFile('/models/' + model + '.schematic',
+                     function(data) {
+
+                         nbt.parse(new Buffer(data), function(error, data) {
+                             if (error) { throw error; }
+
+                             console.log("DATA:", data)
+                         });
+
+                         // Schematic.loadSchematic(new Buffer(data), function(u, s){
+                         //     console.log(u)
+                         //     console.log(s)
+                         // });
+
+                         // Schematic.parse(new Buffer(data), function (err, schem) {
+                         //     console.log(schem.getBlock(0, 0, 0));
+                         //     console.log('width:', schem.width)    // x
+                         //     console.log('height:', schem.height)  // y
+                         //     console.log('length:', schem.length)  // z
+                         //
+                         // });
+
+                         // console.log('we found data', data)
+
+                         // data.forEach(block => {
+                         //     // console.log(block)
+                         //
+                         //     noa.world.setBlockID(2, block.x, block.y - 15, block.z)
+                         // })
+                     },
+                     function(xhr) { console.error(xhr); }
+                );
+            },
+
             loadModel(model = 'pyramid') {
                 this.loadJSON('/models/' + model + '.json',
                          function(data) {
@@ -181,6 +227,25 @@
                          },
                          function(xhr) { console.error(xhr); }
                 );
+            },
+
+            loadSchematicFile(path, success, error)
+            {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function()
+                {
+                    if (xhr.readyState === XMLHttpRequest.DONE) {
+                        if (xhr.status === 200) {
+                            if (success)
+                                success(xhr.responseText);
+                        } else {
+                            if (error)
+                                error(xhr);
+                        }
+                    }
+                };
+                xhr.open("GET", path, false);
+                xhr.send();
             },
 
             loadJSON(path, success, error)
@@ -198,7 +263,7 @@
                         }
                     }
                 };
-                xhr.open("GET", path, true);
+                xhr.open("GET", path, false);
                 xhr.send();
             },
 
