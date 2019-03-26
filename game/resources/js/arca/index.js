@@ -29,6 +29,8 @@ function Engine(opts) {
         // create a basic BJS Scene object
         var scene = new BABYLON.Scene(engine);
 
+        this.scene = scene
+
         // create a FreeCamera, and set its position to (x:0, y:5, z:-10)
         var camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 5, -10), scene);
 
@@ -41,14 +43,8 @@ function Engine(opts) {
         // create a basic light, aiming 0,1,0 - meaning, to the sky
         var light = new BABYLON.HemisphericLight('light1', new BABYLON.Vector3(0, 1, 0), scene);
 
-        // create a built-in "sphere" shape; its constructor takes 6 params: name, segment, diameter, scene, updatable, sideOrientation
-        var sphere = BABYLON.Mesh.CreateSphere('sphere1', 16, 2, scene);
-
-        // move the sphere upward 1/2 of its height
-        sphere.position.y = 1;
-
         // create a built-in "ground" shape;
-        var ground = BABYLON.Mesh.CreateGround('ground1', 6, 6, 2, scene);
+        // var ground = BABYLON.Mesh.CreateGround('ground1', 6, 6, 2, scene);
 
         // return the created scene
         return scene;
@@ -67,31 +63,24 @@ function Engine(opts) {
         engine.resize();
     });
 
-    scene.onPointerObservable.add((pointerInfo) => {
-        switch (pointerInfo.type) {
-            case BABYLON.PointerEventTypes.POINTERDOWN:
-                console.log("POINTER DOWN");
-                break;
-            case BABYLON.PointerEventTypes.POINTERUP:
-                console.log("POINTER UP");
-                break;
-            case BABYLON.PointerEventTypes.POINTERMOVE:
-                console.log("POINTER MOVE");
-                break;
-            case BABYLON.PointerEventTypes.POINTERWHEEL:
-                console.log("POINTER WHEEL");
-                break;
-            case BABYLON.PointerEventTypes.POINTERPICK:
-                console.log("POINTER PICK");
-                break;
-            case BABYLON.PointerEventTypes.POINTERTAP:
-                console.log("POINTER TAP");
-                break;
-            case BABYLON.PointerEventTypes.POINTERDOUBLETAP:
-                console.log("POINTER DOUBLE-TAP");
-                break;
-        }
-    });
+
 
     console.log('Arca initialized with opts:', opts)
+}
+
+
+/** */
+Engine.prototype.setVoxel = function (data) {
+    let { x, y, z, r, g, b, a } = data
+    console.log('Creating voxel with data', data)
+
+    let color = new BABYLON.Color4(r/255, g/255, b/255, a)
+    let faceColors = [color, color, color, color, color, color]
+
+    let voxel = BABYLON.MeshBuilder.CreateBox("voxel", {size: 1, faceColors}, this.scene);
+    voxel.position.x = x
+    voxel.position.y = y
+    voxel.position.z = z
+
+    return true
 }
