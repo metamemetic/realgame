@@ -50,68 +50,13 @@
             // add a listener for when the engine requests a new world chunk
             // `data` is an ndarray - see https://github.com/scijs/ndarray
             noa.world.on('worldDataNeeded', function (id, data, x, y, z) {
-                // console.log('id ' + id + ', data ', data, x, y, z)
-            	// populate ndarray with world data (block IDs or 0 for air)
-            	// for (let i = 0; i < data.shape[0]; ++i) {
-            	// 	for (let k = 0; k < data.shape[2]; ++k) {
-            	// 		let height = getHeightMap(x + i, z + k)
-            	// 		for (let j = 0; j < data.shape[1]; ++j) {
-            	// 			if (y + j < height) {
-            	// 				if (y + j < 0) data.set(i, j, k, dirtID)
-            	// 				else data.set(i, j, k, whiteID);
-            	// 			}
-            	// 		}
-            	// 	}
-            	// }
-            	// pass the finished data back to the game engine
+
             	noa.world.setChunkData(id, data)
             })
 
             setTimeout(() => {
-
-                this.renderBuilding()
-
-
                 this.renderVoxAt('egg1', [-48, -60, -48])
-
-
-
-
-                // this.loadModel('scifi')
-
-                // readFile('https://realgame.test/models/chr_old.vox', function(data) {
-                //     // let buffer = new Buffer(data)
-                //     // console.log(' test we got data', data)
-                //     // console.log(' test we got buffer', buffer)
-                //     console.log(JSON.stringify(parseMagicaVoxel(data)));
-                //
-                // })
-
-
-                // this.loadSchematic('tibetan-temple')
-
-                // for (let x=0; x < 100; x++) {
-                //     noa.world.setBlockID(dirtID, 4, x, 15)
-                //     console.log('did that work', x)
-                // }
-                // noa.addBlock(dirtID, 0, 0, 15)
-                // noa.addBlock(dirtID, 3, 3, 3)
-                // noa.addBlock(dirtID, 20, 20, 20)
-                // noa.addBlock(grassID, 22, 22, 22)
-
-
-
             }, 1000)
-
-
-
-
-            // worldgen - return a heightmap for a given [x,z]
-            function getHeightMap(x, z) {
-            	let xs = 0.8 + Math.sin(x / 10)
-            	let zs = 0.4 + Math.sin(z / 15 + x / 30)
-            	return xs + zs
-            }
 
             let player = require('../player')({
               	// Pass it a copy of the Babylon scene
