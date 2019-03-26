@@ -7,18 +7,8 @@
     import * as BABYLON from 'babylonjs';
     import 'babylonjs-materials';
     import 'babylonjs-gui';
-    // import * as fs from 'fs-web'
-    // var nbt = require('nbt')
-    // var nbt = require('prismarine-nbt')
 
     var vox = require('vox.js')
-
-    // var parseMagicaVoxel = require('parse-magica-voxel');
-
-    require('buffer')
-    // var Schematic = require('mc-schematic')('1.8')
-
-    // var Schematic = require('minecraft-schematic');
 
     export default {
         mounted() {
@@ -27,8 +17,6 @@
             var noa = engine({
                 playerHeight: 2.5
             })
-
-            console.log('noa:', noa)
 
             let scene = noa.rendering.getScene()  // Babylon's "Scene" object
 
@@ -84,46 +72,12 @@
                 this.renderBuilding()
 
 
+                this.renderVoxAt('egg1', [-48, -60, -48])
+
+
+
+
                 // this.loadModel('scifi')
-
-                console.log(vox)
-
-                let parser = new vox.Parser()
-                parser.parse("models/chr_knight.vox").then(function(voxelData) {
-
-                    console.log(voxelData.voxels); // voxel position and color data
-                    console.log(voxelData.size); // model size
-                    console.log(voxelData.palette); // palette data
-
-                    let voxels = voxelData.voxels
-                    let palette = voxelData.palette
-
-
-                    let colorId = 1
-                    let theColor
-
-                    palette.forEach(color => {
-                        console.log(colorId, color)
-
-                        if (colorId < 256) {
-                            theColor = [color.r / 255, color.g / 255, color.b / 255, color.a / 255]
-
-                            noa.registry.registerMaterial('palette' + colorId, theColor, null)
-                            noa.registry.registerBlock(colorId, { material: 'palette' + colorId })
-                            colorId++
-                        }
-
-                    })
-
-                    voxels.forEach(voxel => {
-
-                        noa.world.setBlockID(voxel.colorIndex + 1, voxel.x, voxel.z - 14, voxel.y)
-
-                    })
-
-                });
-
-
 
                 // readFile('https://realgame.test/models/chr_old.vox', function(data) {
                 //     // let buffer = new Buffer(data)
@@ -240,6 +194,37 @@
         },
 
         methods: {
+
+            renderVoxAt(voxFile, position = [0, 0, 0]) {
+
+                let parser = new vox.Parser()
+                parser.parse("models/" + voxFile + ".vox").then(function(voxelData) {
+                    console.log(voxelData.size)
+                    let voxels = voxelData.voxels
+                    let palette = voxelData.palette
+
+                    let colorId = 1
+                    let theColor
+
+                    palette.forEach(color => {
+                        // console.log(colorId, color)
+
+                        if (colorId < 256) {
+                            theColor = [color.r / 255, color.g / 255, color.b / 255, color.a / 255]
+
+                            noa.registry.registerMaterial('palette' + colorId, theColor, null)
+                            noa.registry.registerBlock(colorId, { material: 'palette' + colorId })
+                            colorId++
+                        }
+                    })
+
+                    voxels.forEach(voxel => {
+                        noa.world.setBlockID(voxel.colorIndex + 1, voxel.x + position[0], voxel.z + position[1], voxel.y + position[2])
+                    })
+
+                });
+            },
+
             loadSchematic(model = 'pyramid') {
                 this.loadSchematicFile('/models/' + model + '.schematic',
                      function(data) {

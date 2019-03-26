@@ -27,7 +27,7 @@
         <div id="app" class="full-height">
             <!-- <inventory-bar></inventory-bar> -->
             <main-canvas></main-canvas>
-            <!-- <token-widget></token-widget> -->
+            <token-widget></token-widget>
         </div>
         <script>window.auth_user = {!! json_encode($auth_user); !!};</script>
         <script src="{{ mix('js/app.js') }}"></script>
