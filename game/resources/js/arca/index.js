@@ -117,7 +117,6 @@ function Engine(opts) {
 
 
 
-
     // set up block targeting
     this.blockTestDistance = opts.blockTestDistance || 10
 
@@ -140,34 +139,6 @@ function Engine(opts) {
         }
         this.on('targetBlockChanged', this.defaultBlockHighlightFunction)
     }
-    //
-    //
-    //
-    //
-    // // container (html/div) manager
-    // this.container = createContainer(this, opts)
-    //
-    // // inputs manager - abstracts key/mouse input
-    // // this.inputs = createInputs(this, opts, this.container.element)
-    //
-    // // create block/item property registry
-    // this.registry = createRegistry(this, opts)
-    //
-    // // create world manager
-    // this.world = createWorld(this, opts)
-    //
-    // // rendering manager - abstracts all draws to 3D context
-    // this.rendering = createRendering(this, opts, this.container.canvas)
-
-    // run the render loop
-    // engine.runRenderLoop(function() {
-    //     scene.render();
-    // });
-
-    // the canvas/window resize event handler
-    // window.addEventListener('resize', function() {
-    //     engine.resize();
-    // });
 
     // init rendering stuff that needed to wait for engine internals
     this.rendering.initScene()
@@ -180,11 +151,11 @@ function Engine(opts) {
     window.ndarray = ndarray
     window.vec3 = vec3
     var debug = false
-    // this.inputs.bind('debug', 'Z')
-    // this.inputs.down.on('debug', function onDebug() {
-    //     debug = !debug
-    //     if (debug) window.scene.debugLayer.show(); else window.scene.debugLayer.hide();
-    // })
+    this.inputs.bind('debug', 'Z')
+    this.inputs.down.on('debug', function onDebug() {
+        debug = !debug
+        if (debug) window.scene.debugLayer.show(); else window.scene.debugLayer.hide();
+    })
 }
 
 
@@ -277,6 +248,30 @@ Engine.prototype.tick = function () {
 
 
 
+var __qwasDone = true, __qstart
+function debugQueues(self) {
+    var a = self.world._chunkIDsToAdd.length
+    var b = self.world._chunkIDsToCreate.length
+    var c = self.rendering._chunksToMesh.length
+    var d = self.rendering._numMeshedChunks
+    if (a + b + c > 0) console.log([
+        'Chunks:', 'unmade', a,
+        'pending creation', b,
+        'to mesh', c,
+        'meshed', d,
+    ].join('   \t'))
+    if (__qwasDone && a + b + c > 0) {
+        __qwasDone = false
+        __qstart = performance.now()
+    }
+    if (!__qwasDone && a + b + c === 0) {
+        __qwasDone = true
+        console.log('Queue empty after ' + Math.round(performance.now() - __qstart) + 'ms')
+    }
+}
+
+
+
 /*
  * Render function, called every animation frame. Emits #beforeRender(dt), #afterRender(dt)
  * where dt is the time in ms *since the last tick*.
@@ -306,6 +301,178 @@ Engine.prototype.render = function (framePart) {
 
 
 
+/*
+ *   Utility APIs
+*/
+
+/**
+ * Pausing the engine will also stop render/tick events, etc.
+ * @param paused
+*/
+Engine.prototype.setPaused = function (paused) {
+    this._paused = !!paused
+    // when unpausing, clear any built-up mouse inputs
+    if (!paused) {
+        this.inputs.state.dx = this.inputs.state.dy = 0
+    }
+}
+
+/** @param x,y,z */
+Engine.prototype.getBlock = function (x, y, z) {
+    if (x.length) {
+        return this.world.getBlockID(x[0], x[1], x[2])
+    } else {
+        return this.world.getBlockID(x, y, z)
+    }
+}
+
+/** @param x,y,z */
+Engine.prototype.setBlock = function (id, x, y, z) {
+    // skips the entity collision check
+    if (x.length) {
+        return this.world.setBlockID(id, x[0], x[1], x[2])
+    } else {
+        return this.world.setBlockID(id, x, y, z)
+    }
+}
+
+/**
+ * Adds a block unless obstructed by entities
+ * @param id,x,y,z */
+Engine.prototype.addBlock = function (id, x, y, z) {
+    // add a new terrain block, if nothing blocks the terrain there
+    if (x.length) {
+        if (this.entities.isTerrainBlocked(x[0], x[1], x[2])) return
+        this.world.setBlockID(id, x[0], x[1], x[2])
+    } else {
+        if (this.entities.isTerrainBlocked(x, y, z)) return
+        this.world.setBlockID(id, x, y, z)
+    }
+}
+
+
+
+/** */
+Engine.prototype.getPlayerPosition = function () {
+    return this.entities.getPosition(this.playerEntity)
+}
+
+/** */
+Engine.prototype.getPlayerMesh = function () {
+    return this.entities.getMeshData(this.playerEntity).mesh
+}
+
+/** */
+Engine.prototype.setPlayerEyeOffset = function (y) {
+    this.playerEyeOffset = y
+    var state = this.ents.getState(this.rendering.cameraTarget, this.ents.names.followsEntity)
+    state.offset[1] = y
+}
+
+/** */
+Engine.prototype.getPlayerEyePosition = function () {
+    var pos = this.entities.getPosition(this.playerEntity)
+    vec3.copy(_eyeLoc, pos)
+    _eyeLoc[1] += this.playerEyeOffset
+    return _eyeLoc
+}
+var _eyeLoc = vec3.create()
+
+/** */
+Engine.prototype.getCameraVector = function () {
+    // rendering works with babylon's xyz vectors
+    var v = this.rendering.getCameraVector()
+    vec3.set(_camVec, v.x, v.y, v.z)
+    return _camVec
+}
+var _camVec = vec3.create()
+
+
+
+/**
+ * Raycast through the world, returning a result object for any non-air block
+ * @param pos
+ * @param vec
+ * @param dist
+ */
+Engine.prototype.pick = function (pos, vec, dist, blockIdTestFunction) {
+    if (dist === 0) return null
+    // if no block ID function is specified default to solidity check
+    var testFn = blockIdTestFunction || this.registry.getBlockSolidity
+    var world = this.world
+    var testVoxel = function (x, y, z) {
+        var id = world.getBlockID(x, y, z)
+        return testFn(id)
+    }
+    pos = pos || this.getPlayerEyePosition()
+    vec = vec || this.getCameraVector()
+    dist = dist || this.blockTestDistance
+    var rpos = _hitResult.position
+    var rnorm = _hitResult.normal
+    var hit = raycast(testVoxel, pos, vec, dist, rpos, rnorm)
+    if (!hit) return null
+    // position is right on a voxel border - adjust it so flooring will work as expected
+    for (var i = 0; i < 3; i++) rpos[i] -= 0.01 * rnorm[i]
+    return _hitResult
+}
+var _hitResult = {
+    position: vec3.create(),
+    normal: vec3.create(),
+}
+
+
+
+
+
+
+
+// Each frame, by default pick along the player's view vector
+// and tell rendering to highlight the struck block face
+function updateBlockTargets(noa) {
+    var newhash = ''
+    var blockIdFn = noa.blockTargetIdCheck || noa.registry.getBlockSolidity
+    var result = noa.pick(null, null, null, blockIdFn)
+    if (result) {
+        var dat = _targetedBlockDat
+        for (var i = 0; i < 3; i++) {
+            // position values are right on a border, so adjust them before flooring!
+            var n = result.normal[i] | 0
+            var p = Math.floor(result.position[i])
+            dat.position[i] = p
+            dat.normal[i] = n
+            dat.adjacent[i] = p + n
+            newhash += '|' + p + '|' + n
+        }
+        dat.blockID = noa.world.getBlockID(dat.position[0], dat.position[1], dat.position[2])
+        newhash += '|' + result.blockID
+        noa.targetedBlock = dat
+    } else {
+        noa.targetedBlock = null
+    }
+    if (newhash != _prevTargetHash) {
+        noa.emit('targetBlockChanged', noa.targetedBlock)
+        _prevTargetHash = newhash
+    }
+}
+
+var _targetedBlockDat = {
+    blockID: 0,
+    position: [],
+    normal: [],
+    adjacent: [],
+}
+
+var _prevTargetHash = ''
+
+
+
+
+
+
+
+
+
+
 var profile_hook = function (s) { }
 var profile_hook_render = function (s) { }
 if (PROFILE) (function () {
@@ -324,10 +491,3 @@ if (PROFILE_RENDER) (function () {
         else timer.add(state)
     }
 })()
-
-
-/** */
-Engine.prototype.getPlayerPosition = function () {
-    // return this.entities.getPosition(this.playerEntity)
-    return [0, 0, 0]
-}

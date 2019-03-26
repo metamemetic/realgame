@@ -35,7 +35,6 @@ var defaultOptions = {
 
 function World(arca, _opts) {
     this.arca = arca
-    console.log('in world and arca is', arca)
 
     var opts = extend(defaultOptions, _opts)
 
