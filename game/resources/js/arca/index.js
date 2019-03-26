@@ -20,6 +20,7 @@ var raycast = require('fast-voxel-raycast')
 /** https://gist.github.com/bnolan/7cc954de84ae0b88646899db5b6d1229 */
 var createAOMesh = require('ao-mesher')
 var fill = require('ndarray-fill')
+var parseMagicaVoxel = require('parse-magica-voxel')
 
 
 module.exports = Engine
@@ -222,144 +223,287 @@ Engine.prototype.loadModel = function (data) {
     });
 }
 
-
-Engine.prototype.loadVoxModel = function (data) {
+Engine.prototype.loadVoxModel = function(data) {
     let self = this
-    let { x, y, z, vox } = data
-    let parser = new voxjs.Parser()
+    let {
+        x,
+        y,
+        z,
+        vox
+    } = data
+    // let parser = new voxjs.Parser()
 
-    parser.parse("models/" + vox + ".vox").then(function(parsed) {
+    let B = BABYLON
 
-        var B = BABYLON
+    //
+    // Lighting
+    //
+    let light1 = new B.HemisphericLight('light1', new B.Vector3(0,5,0), scene);
+    light1.intensity = 0.5
 
-        //
-        // Lighting
-        //
-        let light1 = new B.HemisphericLight('light1', new B.Vector3(0,5,0), scene);
-        light1.intensity = 0.5
+    var light2 = new BABYLON.DirectionalLight("dir01", new BABYLON.Vector3(-10, -20, -10), scene)
+    var shadowGenerator = new BABYLON.ShadowGenerator(2048, light2)
+    shadowGenerator.usePoissonSampling = true;
 
-        var light2 = new BABYLON.DirectionalLight("dir01", new BABYLON.Vector3(-10, -20, -10), scene)
-        var shadowGenerator = new BABYLON.ShadowGenerator(2048, light2)
-        shadowGenerator.usePoissonSampling = true;
+    let mat =  new B.StandardMaterial( "mat", scene );
+    mat.diffuseColor = new B.Color3( 0.8, 0, 0 );
 
-        let size = parsed.size
-        console.log(vox + ' size:', size)
+    fetch("models/" + vox + ".vox")
+        .then(r => r.arrayBuffer())
+        .then(buffer => {
+            let parsed = parseMagicaVoxel(buffer)
+            console.log(parsed)
 
-        let voxels = parsed.voxels
+            let size = parsed.SIZE
 
-        // Oversize because ao-mesher doesn't create faces on the boundaries
-        size.x += 3
-        size.y += 3
-        size.z += 3
+            // Oversize because ao-mesher doesn't create faces on the boundaries
+            size.x += 3
+            size.y += 3
+            size.z += 3
 
-        // Construct an ndarray
-        let field = ndarray(new Uint16Array(size.x * size.y * size.z), [size.x, size.y, size.z])
-        fill(field, (x, y, z) => 0)
+            // Construct an ndarray
+            let field = ndarray(new Uint16Array(size.x * size.y * size.z), [size.x, size.y, size.z])
+            fill(field, (x, y, z) => 0)
 
-        voxels.forEach(row => {
-            // console.log(row)
-            let { x, y, z, colorIndex } = row
-            field.set(x, y, z, colorIndex + (1 << 15))
+            parsed.XYZI.forEach(row => {
+                let {
+                    x,
+                    y,
+                    z,
+                    c
+                } = row
+                field.set(x, y, z, c + (1 << 15))
+            })
+
+            const vertData = createAOMesh(field)
+
+            // Convert the vertData format into a babylon.js Mesh
+            let face = 0
+            let i = 0
+            let s = 1
+
+            const hue = 0
+            const positions = []
+            const indices = []
+            const normals = []
+            const colors = []
+
+            // Identity function, use these to nudge the mesh as needed
+            const fx = x => x - 25
+            const fy = y => y + 55
+            const fz = z => z + 25
+
+            while (i < vertData.length) {
+                const textureIndex = vertData[i + 7]
+
+                // const color = new B.Color3(1, 1, 0)
+                var a = new B.Vector3(vertData[i + 0], vertData[i + 1], vertData[i + 2])
+                positions.push(fx(vertData[i + 0] * s))
+                positions.push(fy(vertData[i + 1] * s))
+                positions.push(fz(vertData[i + 2] * s))
+                i += 8
+
+                var b = new B.Vector3(vertData[i + 0], vertData[i + 1], vertData[i + 2])
+                positions.push(fx(vertData[i + 0] * s))
+                positions.push(fy(vertData[i + 1] * s))
+                positions.push(fz(vertData[i + 2] * s))
+                i += 8
+
+                var c = new B.Vector3(vertData[i + 0], vertData[i + 1], vertData[i + 2])
+                positions.push(fx(vertData[i + 0] * s))
+                positions.push(fy(vertData[i + 1] * s))
+                positions.push(fz(vertData[i + 2] * s))
+                i += 8
+
+                // Face index
+                indices.push(face + 0, face + 2, face + 1)
+
+                const intensity = 0.5
+                const offset = 0.4
+                let color = new B.Color3(parsed.RGBA[textureIndex].r / 255, parsed.RGBA[textureIndex].g / 255, parsed.RGBA[textureIndex].b / 255)
+
+                colors.push(color.r * (vertData[i - 24 + 3] / 255 * intensity + offset))
+                colors.push(color.g * (vertData[i - 24 + 3] / 255 * intensity + offset))
+                colors.push(color.b * (vertData[i - 24 + 3] / 255 * intensity + offset))
+                colors.push(1)
+
+                colors.push(color.r * (vertData[i - 16 + 3] / 255 * intensity + offset))
+                colors.push(color.g * (vertData[i - 16 + 3] / 255 * intensity + offset))
+                colors.push(color.b * (vertData[i - 16 + 3] / 255 * intensity + offset))
+                colors.push(1)
+
+                colors.push(color.r * (vertData[i - 8 + 3] / 255 * intensity + offset))
+                colors.push(color.g * (vertData[i - 8 + 3] / 255 * intensity + offset))
+                colors.push(color.b * (vertData[i - 8 + 3] / 255 * intensity + offset))
+                colors.push(1)
+
+                face += 3
+            }
+
+            // Create transferrable objects
+            let positionsArray = new Float32Array(positions)
+            let indicesArray = new Float32Array(indices)
+            let colorsArray = new Float32Array(colors)
+
+            let mesh = new B.Mesh('voxel-mesh', scene)
+            mesh.scaling.set(0.25, 0.25, 0.25)
+            mesh.rotation.set(-Math.PI / 2, 0, 0)
+            mesh.position.set(-8, -2, 8)
+            mesh.receiveShadows = true
+
+            var mat = new BABYLON.StandardMaterial('voxel-material', scene);
+            mat.specularColor = new BABYLON.Color3(0, 0, 0)
+            mesh.material = mat
+
+            var vertexData = new B.VertexData()
+            B.VertexData.ComputeNormals(positions, indices, normals)
+
+            // Assign positions, indices and normals to vertexData
+            vertexData.positions = positions
+            vertexData.indices = indices
+            vertexData.normals = normals
+            vertexData.colors = colors
+
+            // Apply vertexData to custom mesh
+            vertexData.applyToMesh(mesh)
+
+            shadowGenerator.getShadowMap().renderList.push(mesh)
+
         })
-
-        const vertData = createAOMesh(field)
-
-        console.log('What now?', vertData)
-
-
-        // Convert the vertData format into a babylon.js Mesh
-        let face = 0
-        let i = 0
-        let s = 1
-
-        const hue = 0
-        const positions = []
-        const indices = []
-        const normals = []
-        const colors = []
-
-        // Identity function, use these to nudge the mesh as needed
-        const fx = x => x
-        const fy = y => y + 10
-        const fz = z => z + 35
-
-        while (i < vertData.length) {
-            const textureIndex = vertData[i + 7]
-
-            // const color = new B.Color3(1, 1, 0)
-            var a = new B.Vector3(vertData[i + 0], vertData[i + 1], vertData[i + 2])
-            positions.push(fx(vertData[i + 0] * s))
-            positions.push(fy(vertData[i + 1] * s))
-            positions.push(fz(vertData[i + 2] * s))
-            i += 8
-
-            var b = new B.Vector3(vertData[i + 0], vertData[i + 1], vertData[i + 2])
-            positions.push(fx(vertData[i + 0] * s))
-            positions.push(fy(vertData[i + 1] * s))
-            positions.push(fz(vertData[i + 2] * s))
-            i += 8
-
-            var c = new B.Vector3(vertData[i + 0], vertData[i + 1], vertData[i + 2])
-            positions.push(fx(vertData[i + 0] * s))
-            positions.push(fy(vertData[i + 1] * s))
-            positions.push(fz(vertData[i + 2] * s))
-            i += 8
-
-            // Face index
-            indices.push(face + 0, face + 2, face + 1)
-
-            const intensity = 0.5
-            const offset = 0.4
-            let color = new B.Color3(parsed.palette[textureIndex].r / 255, parsed.palette[textureIndex].g / 255, parsed.palette[textureIndex].b / 255)
-
-            colors.push(color.r * (vertData[i - 24 + 3] / 255 * intensity + offset))
-            colors.push(color.g * (vertData[i - 24 + 3] / 255 * intensity + offset))
-            colors.push(color.b * (vertData[i - 24 + 3] / 255 * intensity + offset))
-            colors.push(1)
-
-            colors.push(color.r * (vertData[i - 16 + 3] / 255 * intensity + offset))
-            colors.push(color.g * (vertData[i - 16 + 3] / 255 * intensity + offset))
-            colors.push(color.b * (vertData[i - 16 + 3] / 255 * intensity + offset))
-            colors.push(1)
-
-            colors.push(color.r * (vertData[i - 8 + 3] / 255 * intensity + offset))
-            colors.push(color.g * (vertData[i - 8 + 3] / 255 * intensity + offset))
-            colors.push(color.b * (vertData[i - 8 + 3] / 255 * intensity + offset))
-            colors.push(1)
-
-            face += 3
-        }
-
-        // Create transferrable objects
-        let positionsArray = new Float32Array(positions)
-        let indicesArray = new Float32Array(indices)
-        let colorsArray = new Float32Array(colors)
-
-        let mesh = new B.Mesh('voxel-mesh', scene)
-        mesh.scaling.set(0.25, 0.25, 0.25)
-        mesh.rotation.set(-Math.PI / 2, 0, 0)
-        mesh.position.set(-8, -2, 8)
-        mesh.receiveShadows = true
-
-        var mat = new BABYLON.StandardMaterial('voxel-material', scene);
-        mat.specularColor = new BABYLON.Color3(0, 0, 0)
-        mesh.material = mat
-
-        var vertexData = new B.VertexData()
-        B.VertexData.ComputeNormals(positions, indices, normals)
-
-        // Assign positions, indices and normals to vertexData
-        vertexData.positions = positions
-        vertexData.indices = indices
-        vertexData.normals = normals
-        vertexData.colors = colors
-
-        // Apply vertexData to custom mesh
-        vertexData.applyToMesh(mesh)
-
-        shadowGenerator.getShadowMap().renderList.push(mesh)
-    });
 }
+//
+//     parser.parse("models/" + vox + ".vox").then(function(parsed) {
+//
+//         var B = BABYLON
+//
+//         //
+//         // Lighting
+//         //
+//         let light1 = new B.HemisphericLight('light1', new B.Vector3(0,5,0), scene);
+//         light1.intensity = 0.5
+//
+//         var light2 = new BABYLON.DirectionalLight("dir01", new BABYLON.Vector3(-10, -20, -10), scene)
+//         var shadowGenerator = new BABYLON.ShadowGenerator(2048, light2)
+//         shadowGenerator.usePoissonSampling = true;
+//
+//         let size = parsed.size
+//         console.log(vox + ' size:', size)
+//
+//         let voxels = parsed.voxels
+//
+//         // Oversize because ao-mesher doesn't create faces on the boundaries
+//         size.x += 3
+//         size.y += 3
+//         size.z += 3
+//
+//         // Construct an ndarray
+//         let field = ndarray(new Uint16Array(size.x * size.y * size.z), [size.x, size.y, size.z])
+//         fill(field, (x, y, z) => 0)
+//
+//         voxels.forEach(row => {
+//             // console.log(row)
+//             let { x, y, z, colorIndex } = row
+//             field.set(x, y, z, colorIndex + (1 << 15))
+//         })
+//
+//         const vertData = createAOMesh(field)
+//
+//         console.log('What now?', vertData)
+//
+//
+//         // Convert the vertData format into a babylon.js Mesh
+//         let face = 0
+//         let i = 0
+//         let s = 1
+//
+//         const hue = 0
+//         const positions = []
+//         const indices = []
+//         const normals = []
+//         const colors = []
+//
+//         // Identity function, use these to nudge the mesh as needed
+//         const fx = x => x
+//         const fy = y => y + 10
+//         const fz = z => z + 35
+//
+//         while (i < vertData.length) {
+//             const textureIndex = vertData[i + 7]
+//
+//             // const color = new B.Color3(1, 1, 0)
+//             var a = new B.Vector3(vertData[i + 0], vertData[i + 1], vertData[i + 2])
+//             positions.push(fx(vertData[i + 0] * s))
+//             positions.push(fy(vertData[i + 1] * s))
+//             positions.push(fz(vertData[i + 2] * s))
+//             i += 8
+//
+//             var b = new B.Vector3(vertData[i + 0], vertData[i + 1], vertData[i + 2])
+//             positions.push(fx(vertData[i + 0] * s))
+//             positions.push(fy(vertData[i + 1] * s))
+//             positions.push(fz(vertData[i + 2] * s))
+//             i += 8
+//
+//             var c = new B.Vector3(vertData[i + 0], vertData[i + 1], vertData[i + 2])
+//             positions.push(fx(vertData[i + 0] * s))
+//             positions.push(fy(vertData[i + 1] * s))
+//             positions.push(fz(vertData[i + 2] * s))
+//             i += 8
+//
+//             // Face index
+//             indices.push(face + 0, face + 2, face + 1)
+//
+//             const intensity = 0.5
+//             const offset = 0.4
+//             let color = new B.Color3(parsed.palette[textureIndex].r / 255, parsed.palette[textureIndex].g / 255, parsed.palette[textureIndex].b / 255)
+//
+//             colors.push(color.r * (vertData[i - 24 + 3] / 255 * intensity + offset))
+//             colors.push(color.g * (vertData[i - 24 + 3] / 255 * intensity + offset))
+//             colors.push(color.b * (vertData[i - 24 + 3] / 255 * intensity + offset))
+//             colors.push(1)
+//
+//             colors.push(color.r * (vertData[i - 16 + 3] / 255 * intensity + offset))
+//             colors.push(color.g * (vertData[i - 16 + 3] / 255 * intensity + offset))
+//             colors.push(color.b * (vertData[i - 16 + 3] / 255 * intensity + offset))
+//             colors.push(1)
+//
+//             colors.push(color.r * (vertData[i - 8 + 3] / 255 * intensity + offset))
+//             colors.push(color.g * (vertData[i - 8 + 3] / 255 * intensity + offset))
+//             colors.push(color.b * (vertData[i - 8 + 3] / 255 * intensity + offset))
+//             colors.push(1)
+//
+//             face += 3
+//         }
+//
+//         // Create transferrable objects
+//         let positionsArray = new Float32Array(positions)
+//         let indicesArray = new Float32Array(indices)
+//         let colorsArray = new Float32Array(colors)
+//
+//         let mesh = new B.Mesh('voxel-mesh', scene)
+//         mesh.scaling.set(0.25, 0.25, 0.25)
+//         mesh.rotation.set(-Math.PI / 2, 0, 0)
+//         mesh.position.set(-8, -2, 8)
+//         mesh.receiveShadows = true
+//
+//         var mat = new BABYLON.StandardMaterial('voxel-material', scene);
+//         mat.specularColor = new BABYLON.Color3(0, 0, 0)
+//         mesh.material = mat
+//
+//         var vertexData = new B.VertexData()
+//         B.VertexData.ComputeNormals(positions, indices, normals)
+//
+//         // Assign positions, indices and normals to vertexData
+//         vertexData.positions = positions
+//         vertexData.indices = indices
+//         vertexData.normals = normals
+//         vertexData.colors = colors
+//
+//         // Apply vertexData to custom mesh
+//         vertexData.applyToMesh(mesh)
+//
+//         shadowGenerator.getShadowMap().renderList.push(mesh)
+//     });
+// }
 
 
 /*
