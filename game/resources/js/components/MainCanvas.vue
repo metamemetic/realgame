@@ -1,5 +1,5 @@
 <template>
-    <canvas id="renderCanvas"></canvas>
+    <canvas id="renderCanvas" touch-action="none"></canvas>
 </template>
 
 <script>

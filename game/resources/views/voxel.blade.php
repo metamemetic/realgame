@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;"/>
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <link rel="shortcut icon" href="favicon.png">
+        <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
 
         <title>Arcade City</title>
 
