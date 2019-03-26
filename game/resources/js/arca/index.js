@@ -21,6 +21,11 @@ var raycast = require('fast-voxel-raycast')
 var createAOMesh = require('ao-mesher')
 var fill = require('ndarray-fill')
 var parseMagicaVoxel = require('parse-magica-voxel')
+var nbt = require('prismarine-nbt')
+// var nbt = require('nbt')
+
+var Schematic = require('mc-schematic')('1.8')
+// var Schematic = require('minecraft-schematic');
 
 
 module.exports = Engine
@@ -221,6 +226,58 @@ Engine.prototype.loadModel = function (data) {
 
         })
     });
+}
+
+Engine.prototype.loadSchematic = function(model) {
+    _loadSchematicFile('/models/' + model + '.schematic',
+        function(data) {
+
+            nbt.parseUncompressed(new Buffer(data), function(error, data) {
+                console.log(data)
+                // console.log(data.value.stringTest.value);
+                // console.log(data.value['nested compound test'].value);
+            });
+
+            // console.log(data)
+
+// Schematic.loadSchematic
+            // nbt.parse(data.arrayBuffer(), function (err, schem) {
+
+                // console.log(schem)
+
+                // console.log(schem.getBlock(0, 0, 0));
+                // console.log('width:', schem.width)    // x
+                // console.log('height:', schem.height)  // y
+                // console.log('length:', schem.length)  // z
+
+            // });
+
+            // console.log('Schematic parsergasm:', data)
+            // nbt.parse(data, function(error, data) {
+            //     if (error) { throw error }
+            //
+            //     console.log('DATA:', data)
+            // })
+        }
+    )
+}
+
+var _loadSchematicFile = function (path, success, error) {
+     var xhr = new XMLHttpRequest();
+     xhr.onreadystatechange = function()
+     {
+         if (xhr.readyState === XMLHttpRequest.DONE) {
+             if (xhr.status === 200) {
+                 if (success)
+                     success(xhr.responseText);
+             } else {
+                 if (error)
+                     error(xhr);
+             }
+         }
+     };
+     xhr.open("GET", path, false);
+     xhr.send();
 }
 
 Engine.prototype.loadVoxModel = function(data) {

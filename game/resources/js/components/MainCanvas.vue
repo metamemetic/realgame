@@ -13,41 +13,11 @@
                 skipDefaultHighlighting: true
             })
 
-            let height = 3
-
-            arca.loadVoxModel({
-                vox: 'excalibur2',
-                x: 0,
+            arca.loadModel({
+                vox: 'bluecar1',
+                x: -30,
                 y: 0,
-                z: 0
-            })
-
-            arca.loadModel({
-                vox: 'chr_old',
-                x: 0,
-                y: height,
-                z: 5
-            })
-
-            arca.loadModel({
-                vox: 'chr_knight',
-                x: 20,
-                y: height,
-                z: 5
-            })
-
-            arca.loadModel({
-                vox: 'chr_rain',
-                x: -15,
-                y: height,
-                z: 5
-            })
-
-            arca.loadModel({
-                vox: 'chr_sword',
-                x: -32,
-                y: height,
-                z: 5
+                z: -50
             })
 
             // add a listener for when the engine requests a new world chunk
