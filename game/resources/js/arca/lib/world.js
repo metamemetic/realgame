@@ -12,14 +12,14 @@ module.exports = function (arca, opts) {
 }
 
 
-var PROFILE = 0
+var PROFILE = 1
 var PROFILE_QUEUES = 0
 
 
 var defaultOptions = {
     chunkSize: 24,
-    chunkAddDistance: 3,
-    chunkRemoveDistance: 4
+    chunkAddDistance: 8,
+    chunkRemoveDistance: 9
 }
 
 /**

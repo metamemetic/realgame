@@ -9,7 +9,8 @@
         mounted() {
 
             var arca = engine({
-                userControlsCamera: false
+                userControlsCamera: false, // todo
+                skipDefaultHighlighting: true
             })
 
             let height = 3
@@ -65,7 +66,7 @@
             function getHeightMap(x, z) {
             	var xs = 0.8 + Math.sin(x / 10)
             	var zs = 0.4 + Math.sin(z / 15 + x / 30)
-            	return xs + zs
+            	return (xs + zs) / 8
             }
 
         }

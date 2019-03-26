@@ -294,8 +294,8 @@ function Registry(arca, _options) {
 
     // add a default material and set ID=1 to it
     // note that registering new block data overwrites the old
-    this.registerMaterial('dirt', [0.4, 0.3, 0], null)
-    this.registerBlock(1, { material: 'dirt' })
+    this.registerMaterial('white', [1, 1, 1], null)
+    this.registerBlock(1, { material: 'white' })
 
 
 
