@@ -19,6 +19,27 @@
                 z: 15
             })
 
+            arca.loadModel({
+                vox: 'chr_knight',
+                x: 20,
+                y: -5,
+                z: 15
+            })
+
+            arca.loadModel({
+                vox: 'chr_rain',
+                x: -15,
+                y: -5,
+                z: 15
+            })
+
+            arca.loadModel({
+                vox: 'chr_sword',
+                x: -32,
+                y: -5,
+                z: 15
+            })
+
         }
     }
 </script>
