@@ -15,6 +15,13 @@
 
             let height = 3
 
+            arca.loadVoxModel({
+                vox: 'excalibur2',
+                x: 0,
+                y: 0,
+                z: 0
+            })
+
             arca.loadModel({
                 vox: 'chr_old',
                 x: 0,
