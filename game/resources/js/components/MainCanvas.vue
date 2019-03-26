@@ -12,12 +12,12 @@
                 userControlsCamera: false
             })
 
-            arca.loadModel({
-                vox: 'excalibur2',
-                x: 0,
-                y: 0,
-                z: 0
-            })
+            // arca.loadModel({
+            //     vox: 'excalibur2',
+            //     x: 0,
+            //     y: 0,
+            //     z: 0
+            // })
 
             arca.loadModel({
                 vox: 'chr_old',
@@ -47,12 +47,12 @@
                 z: 5
             })
 
-            arca.loadModel({
-                vox: 'castle',
-                x: -12,
-                y: 5,
-                z: 15
-            })
+            // arca.loadModel({
+            //     vox: 'castle',
+            //     x: -12,
+            //     y: 5,
+            //     z: 15
+            // })
 
         }
     }
