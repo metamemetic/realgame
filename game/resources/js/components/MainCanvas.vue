@@ -1,5 +1,5 @@
 <template>
-    <canvas id="renderCanvas" touch-action="none"></canvas>
+    <canvas id="renderCanvas"></canvas>
 </template>
 
 <script>
@@ -21,8 +21,7 @@
 <style>
     canvas {
         outline: none;
-        touch-action: none;
-        height: 100%; 
+        height: 100%;
         width: 100%;
         position: fixed;
         overflow: hidden;
