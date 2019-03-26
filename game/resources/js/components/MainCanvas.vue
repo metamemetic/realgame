@@ -9,133 +9,15 @@
     import 'babylonjs-gui';
 
     var vox = require('vox.js')
+    var engine = require('../arca')
 
     export default {
         mounted() {
-            var engine = require('noa-engine')
+            console.log(engine)
 
-            var noa = engine({
-                playerHeight: 2.5
-            })
-
-            let scene = noa.rendering.getScene()  // Babylon's "Scene" object
-
-            BABYLON.ParticleHelper.CreateAsync("sun", scene).then((set) => {
-                set.start();
-            });
-
-            // Add skybox and sky config - sky config - https://doc.babylonjs.com/extensions/sky
-        	var skyboxMaterial = new BABYLON.SkyMaterial("skyMaterial", scene);
-            skyboxMaterial.backFaceCulling = false;
-            var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, scene);
-            skybox.material = skyboxMaterial;
-            skyboxMaterial.inclination = 0.49
-            skyboxMaterial.azimuth = 0.25
-
-            // register some block materials (just colors here)
-            let textureURL = null // replace that to use a texture
-            let brownish = [0.45, 0.36, 0.22]
-            let greenish = [0.1, 0.8, 0.2]
-            let black = [0, 0, 0]
-            let white = [1, 1, 1]
-            // noa.registry.registerMaterial('dirt', brownish, textureURL)
-            noa.registry.registerMaterial('grass', greenish, textureURL)
-            // noa.registry.registerMaterial('white', white, textureURL)
-
-            // register block types and their material name
-            // let dirtID = noa.registry.registerBlock(1, { material: 'dirt' })
-            let grassID = noa.registry.registerBlock(1, { material: 'grass' })
-            // let whiteID = noa.registry.registerBlock(3, { material: 'white' })
-
-            // add a listener for when the engine requests a new world chunk
-            // `data` is an ndarray - see https://github.com/scijs/ndarray
-            noa.world.on('worldDataNeeded', function (id, data, x, y, z) {
-
-            	noa.world.setChunkData(id, data)
-            })
-
-            setTimeout(() => {
-                this.renderVoxAt('egg1', [-48, -60, -48])
-            }, 1000)
-
-            let player = require('../player')({
-              	// Pass it a copy of the Babylon scene
-            	scene: scene,
-
-            	// Pass it the initial player color
-            	player_color: new BABYLON.Color4(0,0,255,0.8),
-
-            	// Pass it mesh height
-            	player_height: 1.5,
-            });
-
-            let player_mesh = player.get_player_mesh();
-            player_mesh.scaling.x = 0.65;
-            player_mesh.scaling.y = 0.65;
-            player_mesh.scaling.z = 0.65;
-
-            // Add a player component to the player entity
-            noa.entities.addComponent(noa.playerEntity, noa.entities.names.mesh, {
-            	mesh: player_mesh,
-            	offset: [0, player.get_player_height(), 0],
-            })
-
-            // Allow player mesh to be seen when in first person
-            noa.ents.getState(noa.playerEntity, noa.ents.names.fadeOnZoom).cutoff = 0.0;
-
-            // Rotate player with camera
-            scene.registerBeforeRender(function () {
-                noa.entities.getMeshData(noa.playerEntity).mesh.rotation.y = noa.rendering.getCameraRotation()[1];
-                player.update_particles();
-            });
-
-            // on left mouse, set targeted block to be air
-            noa.inputs.down.on('fire', function () {
-            	if (noa.targetedBlock) {
-            		noa.setBlock(0, noa.targetedBlock.position);
-            	}
-            })
-
-            // Add Player movement animation
-            document.onkeyup = function(e) {
-            	if (['87', '65', '83', '68', '37', '38', '39', '40'].indexOf(e.keyCode.toString()) > -1) {
-            	    if (player.is_walking()) {
-            	        player.stop_walking();
-            	    }
-            	}
-            };
-
-            document.onkeydown = function(e) {
-                if (['87', '65', '83', '68', '37', '38', '39', '40'].indexOf(e.keyCode.toString()) > -1) {
-                    if (!player.is_walking()) {
-                        player.start_walking();
-                    }
-                }
-            };
-
-            // on right mouse, place some grass
-            noa.inputs.down.on('alt-fire', function () {
-            	if (noa.targetedBlock) noa.addBlock(1, noa.targetedBlock.adjacent)
-            })
-
-            // add a key binding for "E" to do the same as alt-fire
-            noa.inputs.bind('alt-fire', 'E')
-
-            // each tick, consume any scroll events and use them to zoom camera
-            let zoom = 0
-            let minZoom = 0.1
-            let maxZoom = 10
-
-            noa.on('tick', function (dt) {
-            	let scroll = noa.inputs.state.scrolly
-            	if (scroll === 0) return
-
-            	// handle zoom controls
-            	zoom += (scroll > 0) ? 1 : -1
-            	if (zoom < minZoom) zoom = minZoom
-            	if (zoom > maxZoom) zoom = maxZoom
-            	noa.rendering.zoomDistance = zoom
-            })
+            // var arca = engine({
+            //     playerHeight: 2.5
+            // })
         },
 
         methods: {
@@ -157,14 +39,15 @@
                         if (colorId < 256) {
                             theColor = [color.r / 255, color.g / 255, color.b / 255, color.a / 255]
 
-                            noa.registry.registerMaterial('palette' + colorId, theColor, null)
-                            noa.registry.registerBlock(colorId, { material: 'palette' + colorId })
+                            // noa.registry.registerMaterial('palette' + colorId, theColor, null)
+                            // noa.registry.registerBlock(colorId, { material: 'palette' + colorId })
                             colorId++
                         }
                     })
 
                     voxels.forEach(voxel => {
-                        noa.world.setBlockID(voxel.colorIndex + 1, voxel.x + position[0], voxel.z + position[1], voxel.y + position[2])
+                        // console.log('Placeholder for placing voxel')
+                        // noa.world.setBlockID(voxel.colorIndex + 1, voxel.x + position[0], voxel.z + position[1], voxel.y + position[2])
                     })
 
                 });
