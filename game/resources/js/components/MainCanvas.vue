@@ -13,6 +13,13 @@
             })
 
             arca.loadModel({
+                vox: 'excalibur2',
+                x: 0,
+                y: 0,
+                z: 0
+            })
+
+            arca.loadModel({
                 vox: 'chr_old',
                 x: 0,
                 y: -5,
