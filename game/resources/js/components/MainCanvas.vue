@@ -21,5 +21,6 @@
 <style>
     canvas {
         outline: none;
+        touch-action: none;
     }
 </style>
