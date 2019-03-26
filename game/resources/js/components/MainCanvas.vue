@@ -4,13 +4,16 @@
 
 <script>
     var engine = require('../arca')
-    var arca = engine({
-        userControlsCamera: false
-    })
 
     export default {
         mounted() {
+
+            var arca = engine({
+                userControlsCamera: false
+            })
+
             console.log(arca)
+
         }
     }
 </script>
