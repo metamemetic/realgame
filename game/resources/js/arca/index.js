@@ -3,7 +3,7 @@
  */
 
 var extend = require('extend')  // Extend one object with one or more others, returning the modified object
-var vox = require('vox.js')     // MagicaVoxel file parser
+var voxjs = require('vox.js')   // MagicaVoxel file parser
 
 module.exports = Engine
 
@@ -72,7 +72,6 @@ function Engine(opts) {
 /** */
 Engine.prototype.setVoxel = function (data) {
     let { x, y, z, r, g, b, a } = data
-    console.log('Creating voxel with data', data)
 
     let color = new BABYLON.Color4(r/255, g/255, b/255, a)
     let faceColors = [color, color, color, color, color, color]
@@ -83,4 +82,43 @@ Engine.prototype.setVoxel = function (data) {
     voxel.position.z = z
 
     return true
+}
+
+Engine.prototype.loadModel = function (data) {
+    let self = this
+    let { x, y, z, vox } = data
+    let parser = new voxjs.Parser()
+
+    parser.parse("models/" + vox + ".vox").then(function(voxelData) {
+        // console.log('Size:', voxelData.size)
+        let voxels = voxelData.voxels
+        let palette = voxelData.palette
+
+        let colors = []
+        let colorId = 1
+        let voxelColor
+
+        palette.forEach(color => {
+            colors[colorId] = color
+            colorId++
+        })
+
+        let numVoxels = 0
+        voxels.forEach(voxel => {
+            if (numVoxels < 500) {
+                numVoxels++
+                voxelColor = colors[voxel.colorIndex + 1]
+                self.setVoxel({
+                    x: voxel.x + x,
+                    y: voxel.z + y,
+                    z: voxel.y + z,
+                    r: voxelColor.r,
+                    g: voxelColor.g,
+                    b: voxelColor.b,
+                    a: voxelColor.a
+                })
+            }
+
+        })
+    });
 }
