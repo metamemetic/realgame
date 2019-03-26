@@ -15,17 +15,20 @@
                 color: #636b6f;
                 font-family: monospace;
                 font-weight: 200;
-                height: 100vh;
+                /* height: 100vh; */
                 margin: 0;
             }
 
-            .full-height {
-                height: 100vh;
+            .lock-screen {
+                height: 100%;
+                overflow: hidden;
+                width: 100%;
+                position: fixed;
             }
         </style>
     </head>
-    <body>
-        <div id="app" class="full-height">
+    <body class="lock-screen">
+        <div id="app">
             <!-- <inventory-bar></inventory-bar> -->
             <main-canvas></main-canvas>
             <!-- <token-widget></token-widget> -->
