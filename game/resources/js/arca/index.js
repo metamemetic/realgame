@@ -90,7 +90,7 @@ Engine.prototype.loadModel = function (data) {
     let parser = new voxjs.Parser()
 
     parser.parse("models/" + vox + ".vox").then(function(voxelData) {
-        // console.log('Size:', voxelData.size)
+        console.log(vox + ' size:', voxelData.size)
         let voxels = voxelData.voxels
         let palette = voxelData.palette
 
@@ -105,7 +105,7 @@ Engine.prototype.loadModel = function (data) {
 
         let numVoxels = 0
         voxels.forEach(voxel => {
-            if (numVoxels < 500) {
+            if (numVoxels < 10000) {
                 numVoxels++
                 voxelColor = colors[voxel.colorIndex + 1]
                 self.setVoxel({
