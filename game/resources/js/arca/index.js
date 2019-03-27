@@ -22,11 +22,6 @@ var createAOMesh = require('ao-mesher')
 var fill = require('ndarray-fill')
 var parseMagicaVoxel = require('parse-magica-voxel')
 var nbt = require('prismarine-nbt')
-// var nbt = require('nbt')
-
-// var Schematic = require('mc-schematic')('1.8')
-var Schematic = require('minecraft-schematic');
-
 
 module.exports = Engine
 
@@ -229,84 +224,43 @@ Engine.prototype.loadModel = function (data) {
 }
 
 Engine.prototype.loadSchematic = function(model) {
-
     fetch("models/" + model + ".schematic")
         .then(r => r.arrayBuffer())
         .then(buffer => {
-            console.log("MAYBE?", buffer)
-
             nbt.parse(new Buffer(buffer), function(error, data) {
-                console.log(data)
-                // console.log(data.value.stringTest.value);
-                // console.log(data.value['nested compound test'].value);
+                console.log(model + ".schematic: ", data)
+                console.log(data.value.Blocks.value)
+
+                var height = data.value.Height.value
+                var width = data.value.Width.value
+                var length = data.value.Length.value
+
+                var blockData = data.value.Blocks.value
+                var blockMeta = data.value.Data.value
+
+                console.log('height', height)
+                console.log('width', width)
+                console.log('length', length)
+
+                let id, index
+
+                for(var x = 0; x < width; ++x) {
+                    for(var y = 0; y < height; ++y) {
+                        for(var z = 0; z < length; ++z) {
+                            index = y * width * length + z * width + x
+                            id = blockData[index]
+                            console.log('[' + x + ', ' + y + ', ' + z + '] - ' + id)
+                        }
+                    }
+                }
+
+
+                // for (var i = 0; i < blockData.length; i++) {
+                //     // console.log(blocksValue[i])
+                // }
+
             });
-
-            // Schematic.loadSchematic(buffer, function(u, s) {
-            //     console.log('u', u)
-            //     console.log('s', s)
-            // })
-
         })
-
-    //
-    // _loadSchematicFile('/models/' + model + '.schematic',
-    //     function(data) {
-    //
-    //         console.log('Data:', data)
-    //         let buffer = new Buffer(data)
-    //         console.log('buffer:', buffer)
-    //
-    //         // Schematic.loadSchematic(buffer, function(u, s) {
-    //         //     console.log(u)
-    //         //     console.log(s)
-    //         // })
-    //
-    //         nbt.parseUncompressed(buffer, function(error, data) {
-    //             console.log(data)
-    //             // console.log(data.value.stringTest.value);
-    //             // console.log(data.value['nested compound test'].value);
-    //         });
-    //
-    //         // console.log(data)
-    //
-    //         // Schematic.loadSchematic
-    //         // nbt.parse(data.arrayBuffer(), function (err, schem) {
-    //
-    //             // console.log(schem)
-    //
-    //             // console.log(schem.getBlock(0, 0, 0));
-    //             // console.log('width:', schem.width)    // x
-    //             // console.log('height:', schem.height)  // y
-    //             // console.log('length:', schem.length)  // z
-    //
-    //         // });
-    //
-    //         // console.log('Schematic parsergasm:', data)
-    //         // nbt.parse(data, function(error, data) {
-    //         //     if (error) { throw error }
-    //         //
-    //         //     console.log('DATA:', data)
-    //         // })
-    //     }
-    // )
-}
-
-var _loadSchematicFile = function (path, success, error) {
-     var xhr = new XMLHttpRequest();
-     xhr.onreadystatechange = function()
-     {
-         if (xhr.readyState === XMLHttpRequest.DONE) {
-             if (xhr.status === 200) {
-                 if (success)
-                     success(xhr.responseText);
-             } else {
-                 if (error)
-                     error(xhr);
-             }
-         }
-     };
-     xhr.open("GET", path, false);
-     xhr.send();
 }
 
 Engine.prototype.loadVoxModel = function(data) {
@@ -457,139 +411,7 @@ Engine.prototype.loadVoxModel = function(data) {
 
         })
 }
-//
-//     parser.parse("models/" + vox + ".vox").then(function(parsed) {
-//
-//         var B = BABYLON
-//
-//         //
-//         // Lighting
-//         //
-//         let light1 = new B.HemisphericLight('light1', new B.Vector3(0,5,0), scene);
-//         light1.intensity = 0.5
-//
-//         var light2 = new BABYLON.DirectionalLight("dir01", new BABYLON.Vector3(-10, -20, -10), scene)
-//         var shadowGenerator = new BABYLON.ShadowGenerator(2048, light2)
-//         shadowGenerator.usePoissonSampling = true;
-//
-//         let size = parsed.size
-//         console.log(vox + ' size:', size)
-//
-//         let voxels = parsed.voxels
-//
-//         // Oversize because ao-mesher doesn't create faces on the boundaries
-//         size.x += 3
-//         size.y += 3
-//         size.z += 3
-//
-//         // Construct an ndarray
-//         let field = ndarray(new Uint16Array(size.x * size.y * size.z), [size.x, size.y, size.z])
-//         fill(field, (x, y, z) => 0)
-//
-//         voxels.forEach(row => {
-//             // console.log(row)
-//             let { x, y, z, colorIndex } = row
-//             field.set(x, y, z, colorIndex + (1 << 15))
-//         })
-//
-//         const vertData = createAOMesh(field)
-//
-//         console.log('What now?', vertData)
-//
-//
-//         // Convert the vertData format into a babylon.js Mesh
-//         let face = 0
-//         let i = 0
-//         let s = 1
-//
-//         const hue = 0
-//         const positions = []
-//         const indices = []
-//         const normals = []
-//         const colors = []
-//
-//         // Identity function, use these to nudge the mesh as needed
-//         const fx = x => x
-//         const fy = y => y + 10
-//         const fz = z => z + 35
-//
-//         while (i < vertData.length) {
-//             const textureIndex = vertData[i + 7]
-//
-//             // const color = new B.Color3(1, 1, 0)
-//             var a = new B.Vector3(vertData[i + 0], vertData[i + 1], vertData[i + 2])
-//             positions.push(fx(vertData[i + 0] * s))
-//             positions.push(fy(vertData[i + 1] * s))
-//             positions.push(fz(vertData[i + 2] * s))
-//             i += 8
-//
-//             var b = new B.Vector3(vertData[i + 0], vertData[i + 1], vertData[i + 2])
-//             positions.push(fx(vertData[i + 0] * s))
-//             positions.push(fy(vertData[i + 1] * s))
-//             positions.push(fz(vertData[i + 2] * s))
-//             i += 8
-//
-//             var c = new B.Vector3(vertData[i + 0], vertData[i + 1], vertData[i + 2])
-//             positions.push(fx(vertData[i + 0] * s))
-//             positions.push(fy(vertData[i + 1] * s))
-//             positions.push(fz(vertData[i + 2] * s))
-//             i += 8
-//
-//             // Face index
-//             indices.push(face + 0, face + 2, face + 1)
-//
-//             const intensity = 0.5
-//             const offset = 0.4
-//             let color = new B.Color3(parsed.palette[textureIndex].r / 255, parsed.palette[textureIndex].g / 255, parsed.palette[textureIndex].b / 255)
-//
-//             colors.push(color.r * (vertData[i - 24 + 3] / 255 * intensity + offset))
-//             colors.push(color.g * (vertData[i - 24 + 3] / 255 * intensity + offset))
-//             colors.push(color.b * (vertData[i - 24 + 3] / 255 * intensity + offset))
-//             colors.push(1)
-//
-//             colors.push(color.r * (vertData[i - 16 + 3] / 255 * intensity + offset))
-//             colors.push(color.g * (vertData[i - 16 + 3] / 255 * intensity + offset))
-//             colors.push(color.b * (vertData[i - 16 + 3] / 255 * intensity + offset))
-//             colors.push(1)
-//
-//             colors.push(color.r * (vertData[i - 8 + 3] / 255 * intensity + offset))
-//             colors.push(color.g * (vertData[i - 8 + 3] / 255 * intensity + offset))
-//             colors.push(color.b * (vertData[i - 8 + 3] / 255 * intensity + offset))
-//             colors.push(1)
-//
-//             face += 3
-//         }
-//
-//         // Create transferrable objects
-//         let positionsArray = new Float32Array(positions)
-//         let indicesArray = new Float32Array(indices)
-//         let colorsArray = new Float32Array(colors)
-//
-//         let mesh = new B.Mesh('voxel-mesh', scene)
-//         mesh.scaling.set(0.25, 0.25, 0.25)
-//         mesh.rotation.set(-Math.PI / 2, 0, 0)
-//         mesh.position.set(-8, -2, 8)
-//         mesh.receiveShadows = true
-//
-//         var mat = new BABYLON.StandardMaterial('voxel-material', scene);
-//         mat.specularColor = new BABYLON.Color3(0, 0, 0)
-//         mesh.material = mat
-//
-//         var vertexData = new B.VertexData()
-//         B.VertexData.ComputeNormals(positions, indices, normals)
-//
-//         // Assign positions, indices and normals to vertexData
-//         vertexData.positions = positions
-//         vertexData.indices = indices
-//         vertexData.normals = normals
-//         vertexData.colors = colors
-//
-//         // Apply vertexData to custom mesh
-//         vertexData.applyToMesh(mesh)
-//
-//         shadowGenerator.getShadowMap().renderList.push(mesh)
-//     });
-// }
+
 
 
 /*
@@ -838,13 +660,6 @@ var _targetedBlockDat = {
 }
 
 var _prevTargetHash = ''
-
-
-
-
-
-
-
 
 
 
