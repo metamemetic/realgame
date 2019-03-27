@@ -13,12 +13,14 @@
                 skipDefaultHighlighting: true
             })
 
-            arca.loadModel({
-                vox: 'bluecar1',
-                x: -30,
-                y: 0,
-                z: -50
-            })
+            // arca.loadModel({
+            //     vox: 'bluecar1',
+            //     x: -30,
+            //     y: 0,
+            //     z: -50
+            // })
+
+            arca.loadSchematic('pyramid')
 
             // add a listener for when the engine requests a new world chunk
             // `data` is an ndarray - see https://github.com/scijs/ndarray

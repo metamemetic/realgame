@@ -24,8 +24,8 @@ var parseMagicaVoxel = require('parse-magica-voxel')
 var nbt = require('prismarine-nbt')
 // var nbt = require('nbt')
 
-var Schematic = require('mc-schematic')('1.8')
-// var Schematic = require('minecraft-schematic');
+// var Schematic = require('mc-schematic')('1.8')
+var Schematic = require('minecraft-schematic');
 
 
 module.exports = Engine
@@ -229,37 +229,66 @@ Engine.prototype.loadModel = function (data) {
 }
 
 Engine.prototype.loadSchematic = function(model) {
-    _loadSchematicFile('/models/' + model + '.schematic',
-        function(data) {
 
-            nbt.parseUncompressed(new Buffer(data), function(error, data) {
+    fetch("models/" + model + ".schematic")
+        .then(r => r.arrayBuffer())
+        .then(buffer => {
+            console.log("MAYBE?", buffer)
+
+            nbt.parse(new Buffer(buffer), function(error, data) {
                 console.log(data)
                 // console.log(data.value.stringTest.value);
                 // console.log(data.value['nested compound test'].value);
             });
 
-            // console.log(data)
-
-// Schematic.loadSchematic
-            // nbt.parse(data.arrayBuffer(), function (err, schem) {
-
-                // console.log(schem)
-
-                // console.log(schem.getBlock(0, 0, 0));
-                // console.log('width:', schem.width)    // x
-                // console.log('height:', schem.height)  // y
-                // console.log('length:', schem.length)  // z
-
-            // });
-
-            // console.log('Schematic parsergasm:', data)
-            // nbt.parse(data, function(error, data) {
-            //     if (error) { throw error }
-            //
-            //     console.log('DATA:', data)
+            // Schematic.loadSchematic(buffer, function(u, s) {
+            //     console.log('u', u)
+            //     console.log('s', s)
             // })
-        }
-    )
+
+        })
+
+    //
+    // _loadSchematicFile('/models/' + model + '.schematic',
+    //     function(data) {
+    //
+    //         console.log('Data:', data)
+    //         let buffer = new Buffer(data)
+    //         console.log('buffer:', buffer)
+    //
+    //         // Schematic.loadSchematic(buffer, function(u, s) {
+    //         //     console.log(u)
+    //         //     console.log(s)
+    //         // })
+    //
+    //         nbt.parseUncompressed(buffer, function(error, data) {
+    //             console.log(data)
+    //             // console.log(data.value.stringTest.value);
+    //             // console.log(data.value['nested compound test'].value);
+    //         });
+    //
+    //         // console.log(data)
+    //
+    //         // Schematic.loadSchematic
+    //         // nbt.parse(data.arrayBuffer(), function (err, schem) {
+    //
+    //             // console.log(schem)
+    //
+    //             // console.log(schem.getBlock(0, 0, 0));
+    //             // console.log('width:', schem.width)    // x
+    //             // console.log('height:', schem.height)  // y
+    //             // console.log('length:', schem.length)  // z
+    //
+    //         // });
+    //
+    //         // console.log('Schematic parsergasm:', data)
+    //         // nbt.parse(data, function(error, data) {
+    //         //     if (error) { throw error }
+    //         //
+    //         //     console.log('DATA:', data)
+    //         // })
+    //     }
+    // )
 }
 
 var _loadSchematicFile = function (path, success, error) {
