@@ -224,6 +224,7 @@ Engine.prototype.loadModel = function (data) {
 }
 
 Engine.prototype.loadSchematic = function(model) {
+    let self = this
     fetch("models/" + model + ".schematic")
         .then(r => r.arrayBuffer())
         .then(buffer => {
@@ -249,7 +250,13 @@ Engine.prototype.loadSchematic = function(model) {
                         for(var z = 0; z < length; ++z) {
                             index = y * width * length + z * width + x
                             id = blockData[index]
-                            console.log('[' + x + ', ' + y + ', ' + z + '] - ' + id)
+                            // console.log('[' + x + ', ' + y + ', ' + z + '] - ' + id)
+
+                            // For now let's put into the world as blocks though that will be for terrain not animated objects(?)
+                            if (id === 1) {
+                                self.world.setBlockID(1, x, y, z)
+                                console.log('Set [' + x + ', ' + y + ', ' + z + ']')
+                            }
                         }
                     }
                 }
