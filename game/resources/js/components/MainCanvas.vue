@@ -11,15 +11,15 @@
             var arca = engine({
                 playerHeight: 4,
                 userControlsCamera: false, // todo
-                // skipDefaultHighlighting: true
+                skipDefaultHighlighting: true
             })
 
             setTimeout(() => {
-                for (let i = -10; i < 15; i++) {
+                for (let i = -10; i < 35; i++) {
                     arca.loadSchematic('road1', [30, 0, i * 18])
                 }
 
-                for (let i = -10; i < 15; i++) {
+                for (let i = -10; i < 35; i++) {
                     arca.loadSchematic('road2', [-11, -1, i * 18])
                 }
 
@@ -39,7 +39,7 @@
                 var mesh = window.carMesh
 
                 // offset of mesh relative to the entity's "position" (center of its feet)
-                var offset = [-5, h / 2 - 3, -8]
+                var offset = [-5, h / 2 - 3, -10]
 
                 // a "mesh" component to the player entity
                 arca.entities.addComponent(eid, arca.entities.names.mesh, {
@@ -108,7 +108,7 @@
             	// handle zoom controls
             	zoom += (scroll > 0) ? 1 : -1
             	if (zoom < 0) zoom = 0
-            	if (zoom > 10) zoom = 10
+            	if (zoom > 20) zoom = 20
             	arca.rendering.zoomDistance = zoom
             })
 

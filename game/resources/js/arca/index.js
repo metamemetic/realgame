@@ -160,7 +160,6 @@ function Engine(opts) {
     console.log('Arca initialized with opts:', opts)
 
     // temp hacks for development
-
     window.arca = this
     window.ndarray = ndarray
     window.vec3 = vec3
@@ -171,17 +170,9 @@ function Engine(opts) {
         if (debug) window.scene.debugLayer.show(); else window.scene.debugLayer.hide();
     })
 
-
-    // var assetsManager = new BABYLON.AssetsManager(window.scene);
-    // assetsManager.useDefaultLoadingScreen = false;
-
-    // BABYLON.OBJFileLoader.MATERIAL_LOADING_FAILS_SILENTLY = true;
-    // BABYLON.OBJFileLoader.SKIP_MATERIALS = true;
-
     let carMesh
 
     BABYLON.SceneLoader.LoadAssetContainer("/models/", "exc3.stl", window.scene, function (container) {
-       console.log('so what did that do', container)
 
        carMesh = container.meshes[0]
        let scale = 0.1

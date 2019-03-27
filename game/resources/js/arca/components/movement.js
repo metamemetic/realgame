@@ -3,12 +3,12 @@
 var vec3 = require('gl-vec3')
 
 /**
- * 
+ *
  * Movement component. State stores settings like jump height, etc.,
  * as well as current state (running, jumping, heading angle).
  * Processor checks state and applies movement/friction/jump forces
- * to the entity's physics body. 
- * 
+ * to the entity's physics body.
+ *
  */
 
 module.exports = function (arca) {
@@ -23,7 +23,7 @@ module.exports = function (arca) {
 			jumping: false,
 
 			// options:
-			maxSpeed: 10,
+			maxSpeed: 100,
 			moveForce: 30,
 			responsiveness: 15,
 			runningFriction: 0,
@@ -116,7 +116,7 @@ function applyMovementPhysics(dt, state, body) {
 		vec3.rotateY(m, m, zeroVec, state.heading)
 
 		// push vector to achieve desired speed & dir
-		// following code to adjust 2D velocity to desired amount is patterned on Quake: 
+		// following code to adjust 2D velocity to desired amount is patterned on Quake:
 		// https://github.com/id-Software/Quake-III-Arena/blob/master/code/game/bg_pmove.c#L275
 		vec3.subtract(push, m, body.velocity)
 		push[1] = 0
@@ -146,6 +146,3 @@ function applyMovementPhysics(dt, state, body) {
 
 
 }
-
-
-

@@ -36,8 +36,3 @@ function makeInputs(arca, opts, element) {
     }
     return inputs
 }
-
-
-
-
-

@@ -28,7 +28,7 @@ function makePhysics(arca, opts) {
 	var isFluidGetter = function (x, y, z) { return world.getBlockFluidity(x, y, z) }
 	var physics = createPhysics(opts, blockGetter, isFluidGetter)
 
-	// Wrap `tick` function with one that steps the engine, 
+	// Wrap `tick` function with one that steps the engine,
 	// then updates all `position` components
 	physics._originalTick = physics.tick
 	physics.tick = function (dt) {
@@ -64,5 +64,3 @@ function updatePositionsFromAABBs(arca) {
 }
 
 var _tempvec = vec3.create()
-
-
