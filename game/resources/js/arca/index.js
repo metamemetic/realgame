@@ -83,6 +83,13 @@ function Engine(opts) {
     // camera controller
     this.cameraControls = createCamControls(this, opts)
 
+    // Add skybox and sky config - sky config - https://doc.babylonjs.com/extensions/sky
+	var skyboxMaterial = new BABYLON.SkyMaterial("skyMaterial", scene);
+    skyboxMaterial.backFaceCulling = false;
+    var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, scene);
+    skybox.material = skyboxMaterial;
+    skyboxMaterial.inclination = 0.49
+    skyboxMaterial.azimuth = 0.25
 
     var ents = this.ents
 
@@ -253,7 +260,7 @@ Engine.prototype.loadSchematic = function(model) {
                             // console.log('[' + x + ', ' + y + ', ' + z + '] - ' + id)
 
                             // For now let's put into the world as blocks though that will be for terrain not animated objects(?)
-                            if (id === 1) {
+                            if (id >= 1) {
                                 self.world.setBlockID(1, x, y, z)
                                 // console.log('Set [' + x + ', ' + y + ', ' + z + ']')
                             }

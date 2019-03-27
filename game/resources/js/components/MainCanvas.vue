@@ -14,8 +14,8 @@
             })
 
             setTimeout(() => {
-                arca.loadSchematic('excalibur')
-            }, 1000)
+                arca.loadSchematic('pyramid')
+            }, 500)
 
             // add a listener for when the engine requests a new world chunk
             // `data` is an ndarray - see https://github.com/scijs/ndarray
