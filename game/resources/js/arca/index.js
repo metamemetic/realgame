@@ -198,6 +198,8 @@ function Engine(opts) {
 
        container.addAllToScene()
 
+       window.carMesh = carMesh
+
     });
 
 }

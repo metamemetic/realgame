@@ -20,8 +20,33 @@
                 }
 
                 for (let i = -10; i < 15; i++) {
-                    arca.loadSchematic('road2', [-5, -1, i * 18])
+                    arca.loadSchematic('road2', [-11, -1, i * 18])
                 }
+
+                // rough wait for carMesh to load
+                // get the player entity's ID and other info (aabb, size)
+                var eid = arca.playerEntity
+                var dat = arca.entities.getPositionData(eid)
+                var w = dat.width
+                var h = dat.height
+
+                // make a Babylon.js mesh and scale it, etc.
+                // var scene = noa.rendering.getScene()  // Babylon's "Scene" object
+                // var mesh = BABYLON.Mesh.CreateBox('player', 1, scene)
+                // mesh.scaling.x = mesh.scaling.z = w
+                // mesh.scaling.y = h
+
+                var mesh = window.carMesh
+
+                // offset of mesh relative to the entity's "position" (center of its feet)
+                var offset = [-5, h / 2 - 3, -8]
+
+                // a "mesh" component to the player entity
+                arca.entities.addComponent(eid, arca.entities.names.mesh, {
+                	mesh: mesh,
+                	offset: offset
+                })
+
 
                 // arca.loadSchematic('excalibur', [-75, 0, -15])
             }, 1000)
@@ -86,6 +111,7 @@
             	if (zoom > 10) zoom = 10
             	arca.rendering.zoomDistance = zoom
             })
+
 
 
         }
