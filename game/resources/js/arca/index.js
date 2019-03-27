@@ -242,7 +242,7 @@ Engine.prototype.loadSchematic = function(model, position = [0, 0, 0]) {
                 var blockData = data.value.Blocks.value
                 var blockMeta = data.value.Data.value
 
-                console.log(model + '.schematic height: ' + height + ', width: ' + width + ', length: ' + length)
+                // console.log(model + '.schematic height: ' + height + ', width: ' + width + ', length: ' + length)
 
                 let id, index
 

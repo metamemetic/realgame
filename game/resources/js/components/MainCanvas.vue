@@ -27,16 +27,16 @@
 
             arca.registry.registerMaterial('black_wool', null, '/models/tex/wool_colored_black.png')
             arca.registry.registerMaterial('diamond_block', null, '/models/tex/diamond_block.png')
-            arca.registry.registerMaterial('white_stained_glass', null, '/models/tex/glass_white.png')
-            arca.registry.registerMaterial('black_stained_glass', null, '/models/tex/glass_black.png')
+            arca.registry.registerMaterial('white_stained_glass', null, '/models/tex/glass_white.png', true, 0.8)
+            arca.registry.registerMaterial('black_stained_glass', null, '/models/tex/glass_black.png', true, 0.4)
             arca.registry.registerMaterial('quartz_block', null, '/models/tex/quartz_block_top.png')
             arca.registry.registerMaterial('purpur_block', null, '/models/tex/purpur_block.png')
             //
             // // register block types and their material name
             arca.registry.registerBlock(35, { material: 'black_wool' })
             arca.registry.registerBlock(57, { material: 'diamond_block' })
-            arca.registry.registerBlock(95, { material: 'white_stained_glass' })
-            arca.registry.registerBlock(96, { material: 'black_stained_glass' })
+            arca.registry.registerBlock(95, { material: 'white_stained_glass', opaque: false })
+            arca.registry.registerBlock(96, { material: 'black_stained_glass', opaque: false })
             arca.registry.registerBlock(155, { material: 'quartz_block' })
             arca.registry.registerBlock(201, { material: 'purpur_block' })
 

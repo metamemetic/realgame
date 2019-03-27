@@ -123,6 +123,8 @@ function Registry(arca, _options) {
             this.registerBlock(blockSolidity.length, {})
         }
 
+        console.log('setting opacity to ', !!opts.opaque)
+
         // flags default to solid, opaque, nonfluid
         blockSolidity[id] = !!opts.solid
         blockOpacity[id] = !!opts.opaque
@@ -182,13 +184,15 @@ function Registry(arca, _options) {
      * @param renderMaterial an optional BABYLON material to be used for block faces with this block material
     */
 
-    this.registerMaterial = function (name, color, textureURL, texHasAlpha, renderMaterial) {
+    this.registerMaterial = function (name, color, textureURL, texHasAlpha, alphaIs, renderMaterial) {
         console.log('register mat: ', name, color, textureURL)
         var id = matIDs[name] || matData.length
         matIDs[name] = id
         var alpha = 1
         if (color && color.length == 4) {
             alpha = color.pop()
+        } else if (texHasAlpha) {
+            alpha = alphaIs
         }
         matData[id] = {
             color: color || [1, 1, 1],
