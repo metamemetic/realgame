@@ -183,7 +183,7 @@ function Registry(arca, _options) {
     */
 
     this.registerMaterial = function (name, color, textureURL, texHasAlpha, renderMaterial) {
-        // console.log('register mat: ', name, color, textureURL)
+        console.log('register mat: ', name, color, textureURL)
         var id = matIDs[name] || matData.length
         matIDs[name] = id
         var alpha = 1

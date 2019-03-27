@@ -18,8 +18,8 @@ var PROFILE_QUEUES = 0
 
 var defaultOptions = {
     chunkSize: 24,
-    chunkAddDistance: 8,
-    chunkRemoveDistance: 9
+    chunkAddDistance: 12,
+    chunkRemoveDistance: 14
 }
 
 /**

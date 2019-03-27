@@ -49,8 +49,6 @@ var defaults = {
 
 function Engine(opts) {
     if (!(this instanceof Engine)) return new Engine(opts)
-
-
     opts = extend(defaults, opts)
     this._tickRate = opts.tickRate
     this._paused = false
@@ -259,9 +257,13 @@ Engine.prototype.loadSchematic = function(model) {
                             id = blockData[index]
                             // console.log('[' + x + ', ' + y + ', ' + z + '] - ' + id)
 
+                            if (id === -101) {
+                                id = 155
+                            }
+
                             // For now let's put into the world as blocks though that will be for terrain not animated objects(?)
                             if (id >= 1) {
-                                self.world.setBlockID(1, x, y, z)
+                                self.world.setBlockID(id, x, y , z)
                                 // console.log('Set [' + x + ', ' + y + ', ' + z + ']')
                             }
                         }

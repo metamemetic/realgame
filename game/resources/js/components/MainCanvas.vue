@@ -14,8 +14,17 @@
             })
 
             setTimeout(() => {
-                arca.loadSchematic('pyramid')
+                arca.loadSchematic('road1')
             }, 500)
+
+            arca.registry.registerMaterial('black_wool', null, '/models/tex/wool_colored_black.png')
+            arca.registry.registerMaterial('diamond_block', null, '/models/tex/diamond_block.png')
+            arca.registry.registerMaterial('quartz_block', null, '/models/tex/quartz_block_top.png')
+            //
+            // // register block types and their material name
+            arca.registry.registerBlock(35, { material: 'black_wool' })
+            arca.registry.registerBlock(57, { material: 'diamond_block' })
+            arca.registry.registerBlock(155, { material: 'quartz_block' })
 
             // add a listener for when the engine requests a new world chunk
             // `data` is an ndarray - see https://github.com/scijs/ndarray
@@ -51,7 +60,7 @@
 
             // on right mouse, place some grass
             arca.inputs.down.on('alt-fire', function () {
-            	if (arca.targetedBlock) arca.addBlock(grassID, arca.targetedBlock.adjacent)
+            	if (arca.targetedBlock) arca.addBlock(1, arca.targetedBlock.adjacent)
             })
 
             // add a key binding for "E" to do the same as alt-fire
