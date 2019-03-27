@@ -14,17 +14,31 @@
             })
 
             setTimeout(() => {
-                arca.loadSchematic('road1')
-            }, 500)
+                for (let i = 0; i < 15; i++) {
+                    arca.loadSchematic('road1', [0, 0, i * 18])
+                }
+
+                for (let i = 0; i < 15; i++) {
+                    arca.loadSchematic('road2', [-30, 0, i * 18])
+                }
+
+                // arca.loadSchematic('road2', [-30, 1, 0])
+            }, 1000)
 
             arca.registry.registerMaterial('black_wool', null, '/models/tex/wool_colored_black.png')
             arca.registry.registerMaterial('diamond_block', null, '/models/tex/diamond_block.png')
+            arca.registry.registerMaterial('white_stained_glass', null, '/models/tex/glass_white.png')
+            arca.registry.registerMaterial('black_stained_glass', null, '/models/tex/glass_black.png')
             arca.registry.registerMaterial('quartz_block', null, '/models/tex/quartz_block_top.png')
+            arca.registry.registerMaterial('purpur_block', null, '/models/tex/purpur_block.png')
             //
             // // register block types and their material name
             arca.registry.registerBlock(35, { material: 'black_wool' })
             arca.registry.registerBlock(57, { material: 'diamond_block' })
+            arca.registry.registerBlock(95, { material: 'white_stained_glass' })
+            arca.registry.registerBlock(96, { material: 'black_stained_glass' })
             arca.registry.registerBlock(155, { material: 'quartz_block' })
+            arca.registry.registerBlock(201, { material: 'purpur_block' })
 
             // add a listener for when the engine requests a new world chunk
             // `data` is an ndarray - see https://github.com/scijs/ndarray
@@ -32,7 +46,7 @@
             	// populate ndarray with world data (block IDs or 0 for air)
             	for (var i = 0; i < data.shape[0]; ++i) {
             		for (var k = 0; k < data.shape[2]; ++k) {
-            			var height = getHeightMap(x + i, z + k)
+            			var height = 1
             			for (var j = 0; j < data.shape[1]; ++j) {
             				if (y + j < height) {
             					if (y + j < 0) data.set(i, j, k, 1)
@@ -44,14 +58,6 @@
             	// pass the finished data back to the game engine
             	arca.world.setChunkData(id, data)
             })
-
-            // worldgen - return a heightmap for a given [x,z]
-            function getHeightMap(x, z) {
-            	var xs = 0.8 + Math.sin(x / 10)
-            	var zs = 0.4 + Math.sin(z / 15 + x / 30)
-            	return (xs + zs) / 8
-            }
-
 
             // on left mouse, set targeted block to be air
             arca.inputs.down.on('fire', function () {

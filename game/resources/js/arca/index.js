@@ -228,14 +228,12 @@ Engine.prototype.loadModel = function (data) {
     });
 }
 
-Engine.prototype.loadSchematic = function(model) {
+Engine.prototype.loadSchematic = function(model, position = [0, 0, 0]) {
     let self = this
     fetch("models/" + model + ".schematic")
         .then(r => r.arrayBuffer())
         .then(buffer => {
             nbt.parse(new Buffer(buffer), function(error, data) {
-                console.log(model + ".schematic: ", data)
-                console.log(data.value.Blocks.value)
 
                 var height = data.value.Height.value
                 var width = data.value.Width.value
@@ -244,9 +242,7 @@ Engine.prototype.loadSchematic = function(model) {
                 var blockData = data.value.Blocks.value
                 var blockMeta = data.value.Data.value
 
-                console.log('height', height)
-                console.log('width', width)
-                console.log('length', length)
+                console.log(model + '.schematic height: ' + height + ', width: ' + width + ', length: ' + length)
 
                 let id, index
 
@@ -257,13 +253,31 @@ Engine.prototype.loadSchematic = function(model) {
                             id = blockData[index]
                             // console.log('[' + x + ', ' + y + ', ' + z + '] - ' + id)
 
+                            // if (model === 'road2') {
+                            //     console.log(id)
+                            // }
+
+                            if (id === 95) {
+                                // console.log('id 95 - what type of stained glass? ', )
+                                if (blockMeta[index] === 15) { // Use black stained glass
+                                    id = 96 // temporary lets register black at 96
+                                } else { // it's (probably) 0... so use white stained glass
+                                    // keep white stained glass at 95
+                                }
+                            }
+
+                            if (id === -53) {
+                                // console.log('purpur stairs...', blockMeta[index])
+                                id = 201
+                            }
+
                             if (id === -101) {
                                 id = 155
                             }
 
                             // For now let's put into the world as blocks though that will be for terrain not animated objects(?)
                             if (id >= 1) {
-                                self.world.setBlockID(id, x, y , z)
+                                self.world.setBlockID(id, x + position[0], y + position[1], z + position[2])
                                 // console.log('Set [' + x + ', ' + y + ', ' + z + ']')
                             }
                         }
