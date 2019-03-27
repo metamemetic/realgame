@@ -123,8 +123,6 @@ function Registry(arca, _options) {
             this.registerBlock(blockSolidity.length, {})
         }
 
-        console.log('setting opacity to ', !!opts.opaque)
-
         // flags default to solid, opaque, nonfluid
         blockSolidity[id] = !!opts.solid
         blockOpacity[id] = !!opts.opaque
@@ -185,7 +183,7 @@ function Registry(arca, _options) {
     */
 
     this.registerMaterial = function (name, color, textureURL, texHasAlpha, alphaIs, renderMaterial) {
-        console.log('register mat: ', name, color, textureURL)
+        // console.log('register mat: ', name, color, textureURL)
         var id = matIDs[name] || matData.length
         matIDs[name] = id
         var alpha = 1

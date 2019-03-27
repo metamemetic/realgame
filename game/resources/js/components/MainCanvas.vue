@@ -15,14 +15,14 @@
 
             setTimeout(() => {
                 for (let i = 0; i < 15; i++) {
-                    arca.loadSchematic('road1', [0, 0, i * 18])
+                    arca.loadSchematic('road1', [30, 0, i * 18])
                 }
 
                 for (let i = 0; i < 15; i++) {
-                    arca.loadSchematic('road2', [-30, 0, i * 18])
+                    arca.loadSchematic('road2', [-5, -1, i * 18])
                 }
 
-                // arca.loadSchematic('road2', [-30, 1, 0])
+                arca.loadSchematic('excalibur', [-75, 0, -15])
             }, 1000)
 
             arca.registry.registerMaterial('black_wool', null, '/models/tex/wool_colored_black.png')
