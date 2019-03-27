@@ -9,20 +9,21 @@
         mounted() {
 
             var arca = engine({
+                playerHeight: 4,
                 userControlsCamera: false, // todo
                 // skipDefaultHighlighting: true
             })
 
             setTimeout(() => {
-                for (let i = 0; i < 15; i++) {
+                for (let i = -10; i < 15; i++) {
                     arca.loadSchematic('road1', [30, 0, i * 18])
                 }
 
-                for (let i = 0; i < 15; i++) {
+                for (let i = -10; i < 15; i++) {
                     arca.loadSchematic('road2', [-5, -1, i * 18])
                 }
 
-                arca.loadSchematic('excalibur', [-75, 0, -15])
+                // arca.loadSchematic('excalibur', [-75, 0, -15])
             }, 1000)
 
             arca.registry.registerMaterial('black_wool', null, '/models/tex/wool_colored_black.png')

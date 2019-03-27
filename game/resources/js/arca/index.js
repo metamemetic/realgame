@@ -23,6 +23,8 @@ var fill = require('ndarray-fill')
 var parseMagicaVoxel = require('parse-magica-voxel')
 var nbt = require('prismarine-nbt')
 
+require('babylonjs-loaders')
+
 module.exports = Engine
 
 // profiling flag
@@ -168,6 +170,36 @@ function Engine(opts) {
         debug = !debug
         if (debug) window.scene.debugLayer.show(); else window.scene.debugLayer.hide();
     })
+
+
+    // var assetsManager = new BABYLON.AssetsManager(window.scene);
+    // assetsManager.useDefaultLoadingScreen = false;
+
+    // BABYLON.OBJFileLoader.MATERIAL_LOADING_FAILS_SILENTLY = true;
+    // BABYLON.OBJFileLoader.SKIP_MATERIALS = true;
+
+    let carMesh
+
+    BABYLON.SceneLoader.LoadAssetContainer("/models/", "exc3.stl", window.scene, function (container) {
+       console.log('so what did that do', container)
+
+       carMesh = container.meshes[0]
+       let scale = 0.1
+
+       console.log(carMesh)
+
+       carMesh.position.x = 3.5
+       carMesh.position.y = 0
+       carMesh.position.z = -3
+
+       carMesh.scaling.x = scale
+       carMesh.scaling.y = scale
+       carMesh.scaling.z = scale
+
+       container.addAllToScene()
+
+    });
+
 }
 
 
