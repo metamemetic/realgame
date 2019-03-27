@@ -255,7 +255,7 @@ Engine.prototype.loadSchematic = function(model) {
                             // For now let's put into the world as blocks though that will be for terrain not animated objects(?)
                             if (id === 1) {
                                 self.world.setBlockID(1, x, y, z)
-                                console.log('Set [' + x + ', ' + y + ', ' + z + ']')
+                                // console.log('Set [' + x + ', ' + y + ', ' + z + ']')
                             }
                         }
                     }
